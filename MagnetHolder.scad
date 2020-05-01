@@ -7,27 +7,38 @@ px = 1;
 /*
 a = 20; //diameter of magnet
 b = 25; //height of magnet
+c = 4.5; //hole for screw
+cable_r = 2.5; //radius for cable hole
+top_offset = 3.7; //inner radius for top (screw has to fit in)
 //*/
 
 //120N
-//*
+/*
 a = 25;
 b = 29;
+c = 4.5;
+cable_r = 2.5;
+top_offset = 3.7;
 //*/
 
 //180N
-/*
+//*
 a = 32;
 b = 29;
+c = 5.5;
+cable_r = 3.5;
+top_offset = 5.2;
 //*/
 
 //300N
 /*
 a = 35;
 b = 29;
+c = 5.5;
+cable_r = 3.5;
+top_offset = 5.2;
 //*/
 
-c = 4.5;
 
 inner_h = b;
 inner_r = a/2+0.2;
@@ -36,14 +47,11 @@ t_top = 4;
 outer_h = inner_h + t_top;
 outer_r = inner_r + t_side;
 
-cable_r = 2.5;
-
 top_count = 4;
 top_angle = 80;
 top_a = 2;
 top_h = 8;
 top_hh = 5;
-top_offset = 3.7;
 top_ring_h = 2;
 top_ring_r1 = top_offset;
 top_ring_r2 = top_ring_r1 + top_a;
@@ -53,7 +61,7 @@ module cyl(h, r, addP2 = false) {
     cylinder(h + (addP2 ? p2 : 0), r=r, center=true);
 }
 
-union() {
+module magnet() {
     difference() { 
         translate([0, 0, inner_h])
         cyl(t_top, outer_r);
@@ -66,7 +74,9 @@ union() {
         cyl(outer_h, outer_r);
         cyl(outer_h, inner_r, true);
     }
+}
 
+module holder() {
     translate([0, 0, outer_h])
     rotate(-top_angle/2)
     for(i=[1:top_count]) {
@@ -83,3 +93,18 @@ union() {
         cyl(top_ring_h, top_ring_r1, true);
     }
 }
+
+module holder_bottom() {
+    translate([0, 0, outer_h])
+    difference() {
+        cyl(top_ring_h, top_ring_r2, false);
+        cyl(top_ring_h+p, c/2, true);
+    }
+}
+
+union() {
+    magnet();
+    holder();   
+    //holder_bottom();
+}
+
