@@ -35,33 +35,22 @@ module hole(h = height, d = dot_d) {
     cylinder(h+p2, d=d, center=true);
 }
 
-module mask(face) {
+module mask(face, withSpacing=true) {
     difference() {
-        cube([a, b, height]);    
-        for(i = [1:numX]) {
-            for(j = [1:numY]) {
-                for(n = [0:face-1]) {
-                    dx = i * (spacing + dice_size) - dice_size;
-                    dy = j * (spacing + dice_size) - dice_size;
-                    translate([dx, dy, height/2])
-                    translate([holes[face-1][n][0], holes[face-1][n][1], 0] * dice_size)
-                    hole();
-                }
-            }
-        }
-    }
-}
-
-module spacing() {
-    translate([0, 0, height-p])
-    difference() {
-        cube([a, b, spacing_h]);
+        cube([a, b, height + (withSpacing ? spacing_h : 0)]);
         for(i = [1:numX]) {
             for(j = [1:numY]) {
                 dx = i * (spacing + dice_size) - dice_size;
                 dy = j * (spacing + dice_size) - dice_size;
-                translate([dx, dy, -p])
-                cube([dice_size, dice_size, spacing_h + p2]);
+                if (withSpacing) {
+                    translate([dx, dy, height-p])
+                    cube([dice_size, dice_size, spacing_h + p2]);
+                }
+                for(n = [0:face-1]) {
+                    translate([dx, dy, height/2])
+                    translate([holes[face-1][n][0], holes[face-1][n][1], 0] * dice_size)
+                    hole();
+                }
             }
         }
     }
@@ -79,7 +68,6 @@ for(f = [1:4]) {
     translate([ceil(f / 2 - 1) * (a + 5), (f % 2 - 1) * (b + 5), 0])
     union() {
         mask(f);
-        spacing();
     }
 }
 
@@ -87,6 +75,5 @@ for(f = [1:4]) {
     translate([ceil(f / 2 - 1) * (a + 5), (f % 2 - 1) * (b + 5), 0])
     union() {
         mask(f);
-        spacing();
     }
 }
