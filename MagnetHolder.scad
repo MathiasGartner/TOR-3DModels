@@ -39,7 +39,6 @@ cable_r = 3.5;
 top_offset = 5.2;
 //*/
 
-
 inner_h = b;
 inner_r = a/2+0.2;
 t_side = 2;
@@ -104,7 +103,7 @@ module holder_bottom() {
 
 union() {
     magnet();
-    holder();   
+    //holder();   
     //holder_bottom();
 }
 
