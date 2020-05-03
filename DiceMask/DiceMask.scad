@@ -1,16 +1,20 @@
-$fn=400;
+//$fn=100;
+$fa=6;
+$fs=0.075;
 p = 0.05;
 p2 = 2*p;
 px = 1;
 
-numX = 3;
-numY = 3;
+numX = 2;
+numY = 2;
 
-dice_size = 20;
-height = 3;
+dice_size = 16;
+dice_extra = 0.75; //extra spacing on each side (mask size is dice_size + 2 * dice_extra)
+height = 1;
 spacing = 3;
 spacing_h = 5;
-dot_d = 3;
+dot_d1 = 5;
+dot_d2 = 3; //diameter of the dot
 
 h2_in = 0.25;
 h3_in = h2_in;
@@ -28,11 +32,16 @@ h6 = [[h6_in_x, h6_in_y], [h6_in_x, 0.5], [h6_in_x, 1-h6_in_y], [1-h6_in_x, h6_i
 
 holes = [h1, h2, h3, h4, h5, h6];
 
-a = dice_size * numX + spacing * (numX + 1);
-b = dice_size * numY + spacing * (numY + 1);
+d_size = (dice_size + 2 * dice_extra);
+a = d_size * numX + spacing * (numX + 1);
+b = d_size * numY + spacing * (numY + 1);
 
 module hole(h = height, d = dot_d) {
     cylinder(h+p2, d=d, center=true);
+}
+
+module conical_hole(h = height, d1 = dot_d1, d2 = dot_d2) {
+    cylinder(h+p2, d1=d1, d2=d2, center=true);
 }
 
 module mask(face, withSpacing=true) {
@@ -40,40 +49,30 @@ module mask(face, withSpacing=true) {
         cube([a, b, height + (withSpacing ? spacing_h : 0)]);
         for(i = [1:numX]) {
             for(j = [1:numY]) {
-                dx = i * (spacing + dice_size) - dice_size;
-                dy = j * (spacing + dice_size) - dice_size;
+                dx = i * (spacing + d_size) - d_size;
+                dy = j * (spacing + d_size) - d_size;
                 if (withSpacing) {
                     translate([dx, dy, height-p])
-                    cube([dice_size, dice_size, spacing_h + p2]);
+                    cube([d_size, d_size, spacing_h + p2]);
                 }
                 for(n = [0:face-1]) {
-                    translate([dx, dy, height/2])
+                    translate([dx + dice_extra, dy + dice_extra, height/2])
                     translate([holes[face-1][n][0], holes[face-1][n][1], 0] * dice_size)
-                    hole();
+                    conical_hole();
                 }
             }
         }
     }
 }
 
-*for(f = [1:6]) {
-    translate([ceil(f / 2 - 1) * (a + 5), (f % 2 - 1) * (b + 5), 0])
-    union() {
-        mask(f);
-        spacing();
-    }
-}
+*mask(1);
+*mask(2);
+*mask(3);
+*mask(4);
+*mask(5);
+*mask(6);
 
-for(f = [1:4]) {
+for(f = [1:6]) {
     translate([ceil(f / 2 - 1) * (a + 5), (f % 2 - 1) * (b + 5), 0])
-    union() {
-        mask(f);
-    }
-}
-
-*for(f = [5:6]) {
-    translate([ceil(f / 2 - 1) * (a + 5), (f % 2 - 1) * (b + 5), 0])
-    union() {
-        mask(f);
-    }
+    mask(f);
 }
