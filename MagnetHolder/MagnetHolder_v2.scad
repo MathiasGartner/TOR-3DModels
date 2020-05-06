@@ -52,27 +52,32 @@ outer_r = inner_r + t_side;
 
 top_count = 4;
 top_angle = 80;
-top_a = 2;
+top_a = 2.5;
 top_h = 8;
 top_hh = 5;
 top_ring_h = 2;
 top_ring_r1 = top_offset;
 top_ring_r2 = top_ring_r1 + top_a;
-top_angle_t = 20;
+top_angle_t = 18;
 top_h_t = 3;
 top_down_angle = 1 * top_angle_t;
 top_side_angle = 1 * top_angle_t;
-top_up_angle = top_angle_t;
-top_down_h = 3 * top_h_t;
+top_up_angle = 1 * top_angle_t;
+top_down_h = 2.5 * top_h_t;
 top_side_h = top_h_t;
-top_up_h = 1.5 * top_h_t;
-top_fix_offset = screw_head_height + 0.5;
+top_up_h = 1.3 * top_h_t;
+top_fix_offset = screw_head_height + 1;
 top_total_h = top_down_h + top_fix_offset;
 
-cord_h = top_down_h;
-cord_hole_r = 1.0;
-angle_diff = 1;
+cord_h = top_down_h - (top_up_h - top_side_h);
+cord_hole_r = 0.5;
+angle_diff = 2;
 h_diff = 0.5;
+single_hole = false;
+multi_hole_offset = 0.8;
+mhs = multi_hole_offset;
+
+top_bottom_h = 1.0;
 
 module cyl(h, r, addP2 = false) {
     translate([0, 0, h/2])
@@ -119,8 +124,8 @@ module top_fix() {
 //bottom for top_fix if printed without magnet case
 module top_bottom() {
     difference() {
-        cyl(top_ring_h, top_ring_r2, false);
-        cyl(top_ring_h+p, c/2, true);
+        cyl(top_bottom_h, top_ring_r2, false);
+        cyl(top_bottom_h+p, c/2, true);
     }
 }
 
@@ -128,15 +133,28 @@ module top_bottom() {
 module top_cords() {
     difference() {
         union() {
-            cyl(cord_h, top_ring_r1);
+            cyl(cord_h, top_ring_r1-0.1);
+            rotate(-(top_up_angle-angle_diff) / 2)
             for(i=[1:top_count]) {
                 rotate(i*360/top_count) {
                     rotate_extrude(angle=top_up_angle-angle_diff)
-                    square([top_ring_r2+p2, top_up_h-h_diff]);
+                    square([top_ring_r2+p2, top_side_h-h_diff]);
                 }
             }
         }
-        cyl(top_total_h, cord_hole_r, true);
+        if (single_hole) {
+            cyl(top_total_h, cord_hole_r * 2, true);
+        }
+        else {
+            translate([mhs, mhs, 0])
+            cyl(top_total_h, cord_hole_r, true);
+            translate([mhs, -mhs, 0])
+            cyl(top_total_h, cord_hole_r, true);
+            translate([-mhs, mhs, 0])
+            cyl(top_total_h, cord_hole_r, true);
+            translate([-mhs, -mhs, 0])
+            cyl(top_total_h, cord_hole_r, true);
+        }
     }
 }
 
@@ -156,6 +174,6 @@ union() {
 
 union() {
     top_bottom();
-    translate([0, 0, top_ring_h])
+    translate([0, 0, top_bottom_h])
     top_fix();
 }

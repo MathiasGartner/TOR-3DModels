@@ -1,14 +1,12 @@
-//$fn=100;
 $fa=6;
 $fs=0.075;
 p = 0.05;
 p2 = 2*p;
-px = 1;
 
-dice_size = 16;
+dice_size = 20;
 sphere_factor = 1.4;
-hole_d = 13;
-hole_extra = 0.2;
+hole_d = 15;
+hole_extra = 0.3;
 
 difference() {
     intersection() {
