@@ -70,11 +70,12 @@ top_fix_offset = screw_head_height + 1;
 top_total_h = top_down_h + top_fix_offset;
 
 cord_h = top_down_h - (top_up_h - top_side_h);
-cord_hole_r = 0.5;
+cord_hole_single_r = 1.0;
+cord_hole_multi_r = 0.7;
 angle_diff = 2;
 h_diff = 0.5;
 single_hole = false;
-multi_hole_offset = 0.8;
+multi_hole_offset = 1.0;
 mhs = multi_hole_offset;
 
 top_bottom_h = 1.0;
@@ -143,17 +144,17 @@ module top_cords() {
             }
         }
         if (single_hole) {
-            cyl(top_total_h, cord_hole_r * 2, true);
+            cyl(top_total_h, cord_hole_single_r * 2, true);
         }
         else {
             translate([mhs, mhs, 0])
-            cyl(top_total_h, cord_hole_r, true);
+            cyl(top_total_h, cord_hole_multi_r, true);
             translate([mhs, -mhs, 0])
-            cyl(top_total_h, cord_hole_r, true);
+            cyl(top_total_h, cord_hole_multi_r, true);
             translate([-mhs, mhs, 0])
-            cyl(top_total_h, cord_hole_r, true);
+            cyl(top_total_h, cord_hole_multi_r, true);
             translate([-mhs, -mhs, 0])
-            cyl(top_total_h, cord_hole_r, true);
+            cyl(top_total_h, cord_hole_multi_r, true);
         }
     }
 }
