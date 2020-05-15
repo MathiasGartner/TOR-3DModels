@@ -1,4 +1,4 @@
-$fa=6;
+$fa=3;
 $fs=0.05;
 p = 0.01;
 p2 = 2*p;
@@ -45,10 +45,11 @@ screw_head_height = 5.0;
 
 inner_h = b;
 inner_r = a/2+0.2;
-t_side = 2;
-t_top = 4;
+t_side = 3;
+t_top = 3;
 outer_h = inner_h + t_top;
 outer_r = inner_r + t_side;
+echo(outer_h);
 
 top_count = 4;
 top_angle = 80;
@@ -85,6 +86,13 @@ module cyl(h, r, addP2 = false) {
     cylinder(h + (addP2 ? p2 : 0), r=r, center=true);
 }
 
+module magnet_fix_hole(d, t, angle) {
+    extra = 1;
+    translate([sin(angle), -cos(angle), 0]*(inner_r - extra))
+    rotate([90, 0, angle])
+    cyl(t + extra, d/2+0.1);
+}
+
 //case for magnet
 module magnet() {
     difference() { 
@@ -97,8 +105,46 @@ module magnet() {
     }
     difference() {
         cyl(outer_h, outer_r);
-        cyl(outer_h, inner_r, true);
-    }
+        cyl(outer_h, inner_r, true);        
+        h1 = 7;
+        h2 = 25;
+        for(i=[0:2]) {
+            translate([0, 0, h1])
+            magnet_fix_hole(6, 1, 270+(i-1)*22);
+            translate([0, 0, h2])
+            magnet_fix_hole(6, 1, 270+(i-1)*22);
+        }
+        translate([0, 0, h1])
+        magnet_fix_hole(5, 1.5, 90);
+        translate([0, 0, h2])
+        magnet_fix_hole(5, 1.5, 90);
+        translate([0, 0, h1])
+        magnet_fix_hole(2, 5, 90);
+        translate([0, 0, h2])
+        magnet_fix_hole(2, 5, 90);
+        translate([0, 0, h1])
+        magnet_fix_hole(8, 1, 75);
+        translate([0, 0, h2])
+        magnet_fix_hole(8, 1, 75);
+        *translate([0, 0, 10]) {
+            for(i=[0:5]) {
+                translate([0, 0, -5])
+                magnet_fix_hole(3, 1, i*12);
+            }
+            for(i=[0:4]) {
+                translate([0, 0, 5])
+                magnet_fix_hole(4, 1, i*15+90);
+            }
+            for(i=[0:3]) {
+                translate([0, 0, -5])
+                magnet_fix_hole(5, 1, i*19+180);
+            }
+            for(i=[0:3]) {
+                translate([0, 0, 5])
+                magnet_fix_hole(6, 1, i*22+270);
+            }
+        }
+    }    
 }
 
 //mount that is fixed on magnet case with screw
@@ -159,21 +205,21 @@ module top_cords() {
     }
 }
 
-translate([20, 0, 0])
+*translate([20, 0, 0])
 top_cords();
 
-translate([0, -30, 0])
+//translate([0, -30, 0])
 magnet();
 
 //magnet case with top fix
-translate([0, 30, 0])
+*translate([0, 30, 0])
 union() {
     magnet();
     translate([0, 0, outer_h])
     top_fix();   
 }
 
-union() {
+*union() {
     top_bottom();
     translate([0, 0, top_bottom_h])
     top_fix();
