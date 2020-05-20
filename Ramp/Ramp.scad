@@ -6,7 +6,7 @@ p2 = 2*p;
 acryl_h = 3;
 
 a = 288;
-b = 200;
+b = 170;
 h = 30;
 angle = 40;
 
@@ -26,7 +26,7 @@ cable_x = a/2;
 
 holder_a = 20;
 holder_b = 10;
-holder_h = 2;
+holder_h = 1.5;
 holder_x = (a-holder_a)/2 - 20;
 holder_y = (b-holder_b/2) - 20;
 
@@ -85,6 +85,7 @@ module form()  {
     cube([holder_a, holder_b, holder_h+p], center=true);   
 }
 
+//rotate([-angle, 0, 0])
 *form();
 
 difference() {    
