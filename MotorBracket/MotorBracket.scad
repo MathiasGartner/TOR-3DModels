@@ -49,7 +49,7 @@ m_w = 42.3;
 m_h = 42.3;
 m_t = 39;
 mount_distance = 31;
-mount_circle_inset = 2;
+mount_circle_inset = 2.2;
 mount_circle_inset_d = 22.5;
 mount_hole_d = 6;
 //*/
@@ -108,8 +108,22 @@ module motorMount() {
         translate([-hha, -hhb, 0])
         hole(h=holder_h);
         cylinder(h=tht+p2, d=mount_hole_d, center=true);
-        translate([0, 0, -tht/2])
+        translate([0, 0, -tht/2+mount_circle_inset/2-p])
         cylinder(h=mount_circle_inset, d=mount_circle_inset_d+0.5, center=true);
+        hull_hole_distance = mount_distance/2 / sqrt(2);
+        hull_angle = 180;
+        nut_sq_m = 2;
+        nut_sq_s = 5.6;
+        rotate([0, 0, 180-20 + hull_angle/4*1])
+        translate([hull_hole_distance, hull_hole_distance, -(holder_h/2+p)+nut_sq_m/2]) {        
+            hole(h=holder_h*2);
+            cube([nut_sq_s, nut_sq_s, nut_sq_m], center=true);
+        }
+        rotate([0, 0, 180-20 + hull_angle/4*3])
+        translate([hull_hole_distance, hull_hole_distance, -(holder_h/2+p)+nut_sq_m/2]) {        
+            hole(h=holder_h*2);
+            cube([nut_sq_s, nut_sq_s, nut_sq_m], center=true);
+        }
     };
 }
 
