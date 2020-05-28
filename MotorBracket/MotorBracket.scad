@@ -96,7 +96,7 @@ module triangle(a, b, h) {
     polygon(points=[[0,0],[a,0],[0,b]], paths=[[0,1,2]]);
 }
 
-module motorMount() {
+module motorMount(hullOnLeft=true) {
     difference() {
         cube([holder_a, holder_b, holder_h], center=true);
         translate([hha, hhb, 0])
@@ -110,16 +110,19 @@ module motorMount() {
         cylinder(h=tht+p2, d=mount_hole_d, center=true);
         translate([0, 0, -tht/2+mount_circle_inset/2-p])
         cylinder(h=mount_circle_inset, d=mount_circle_inset_d+0.5, center=true);
-        hull_hole_distance = mount_distance/2 / sqrt(2);
+        hull_hole_distance = 17.95/sqrt(2); //from pulley.scad
+        //hull_hole_distance = 2
         hull_angle = 180;
         nut_sq_m = 2;
         nut_sq_s = 5.6;
-        rotate([0, 0, 180-20 + hull_angle/4*1])
+        angle1 = hullOnLeft ? -90+20-hull_angle/4*1 : -90-20-hull_angle/4*1;
+        angle2 = hullOnLeft ? -90+20-hull_angle/4*3 : +90-20-hull_angle/4*3;
+        rotate([0, 0, angle1])
         translate([hull_hole_distance, hull_hole_distance, -(holder_h/2+p)+nut_sq_m/2]) {        
             hole(h=holder_h*2);
             cube([nut_sq_s, nut_sq_s, nut_sq_m], center=true);
         }
-        rotate([0, 0, 180-20 + hull_angle/4*3])
+        rotate([0, 0, angle2])
         translate([hull_hole_distance, hull_hole_distance, -(holder_h/2+p)+nut_sq_m/2]) {        
             hole(h=holder_h*2);
             cube([nut_sq_s, nut_sq_s, nut_sq_m], center=true);
@@ -127,7 +130,7 @@ module motorMount() {
     };
 }
 
-module bracket(hasStabilizerLeft=true, hasStabilizerRight=true) {
+module bracket(hasStabilizerLeft=true, hasStabilizerRight=true, hullOnLeft=true) {
     //bottom
     translate([0, 0, bottom_h/2])
     difference() {
@@ -176,7 +179,7 @@ module bracket(hasStabilizerLeft=true, hasStabilizerRight=true) {
     //motor mount
     translate([0, -bottom_b/2+holder_h/2, holder_a/2+bottom_h])
     rotate([90, 0, 0])
-    motorMount();
+    motorMount(hullOnLeft);
 };
 
 module bracketWihtoutSide() {
@@ -225,9 +228,10 @@ module bracketWihtoutSide() {
 *bracket();
 
 union() {
-    bracket(false, true);
-    translate([m_w+th, 0, 0])
-    bracket(true, false);
+    bracket(false, true, false);
+    //translate([m_w+th*2, 0, 0])
+    translate([m_w+5, 0, 0]) //5mm for cables
+    bracket(true, false, true);
 }
 
 *union() {
@@ -235,12 +239,3 @@ union() {
     translate([m_w+2*th+tr1_a, 0, 0])
     bracket(true, true);
 }
-
-
-
-
-
-
-
-
-

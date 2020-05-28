@@ -6,7 +6,7 @@ p2 = 2*p;
 acryl_h = 3;
 
 a = 288;
-b = 170;
+b = 189;
 h = 30;
 angle = 40;
 
@@ -37,6 +37,9 @@ outer_border = 10;
 outer_a = a + 2 * outer_border;
 outer_b = b + top_b + 2 * outer_border;
 outer_h = h + outer_border - p;
+outer_aa = outer_a + 2 * outer_border;
+outer_bb = outer_b + 2 * outer_border;
+outer_hh = 1.5*outer_h + outer_border - p;
 
 module form()  {
     difference() {
@@ -62,7 +65,7 @@ module form()  {
         rotate([angle, 0, 0])
         cylinder(3*h, d=hole_d, center=true);        
         
-        //flex
+        //flex cable
         translate([0, -top_b-p, 0])
         translate([0, 0, h])
         rotate([angle, 0, 0])
@@ -85,13 +88,95 @@ module form()  {
     cube([holder_a, holder_b, holder_h+p], center=true);   
 }
 
-//rotate([-angle, 0, 0])
-*form();
+module mold_form() {
+    union() {
+        translate([0, -(b-top_b)/2, 0])
+        translate([0, 0, h])
+        rotate([0, 180, 0])
+        form();
 
-difference() {    
+        translate([0, 0, -outer_border*2])
+        union() {
+            difference() {
+                translate([0, 0, outer_hh/2])
+                cube([outer_aa, outer_bb, outer_hh], center=true);    
+                translate([0, 0, -outer_h/2+outer_hh+p])
+                cube([outer_a, outer_b, outer_h*2], center=true);
+            }
+            translate([0, 0, outer_border/2+outer_border-p])
+            cube([a, b+top_b, outer_border+p2], center=true);
+        }
+    }
+}
+
+*difference() {    
     translate([-outer_a/2, -(top_b + outer_border), -outer_border])
     cube([outer_a, outer_b, outer_h]);
     form();
 }
 
+//form
+//rotate([-angle, 0, 0])
+*translate([0, -(b-top_b)/2, 0])
+translate([0, 0, h])
+rotate([0, 180, 0])
+form();
 
+//mold_form
+mold_form();
+
+//right part
+translate([0, 0, outer_hh*2])
+difference() {
+    mold_form();
+    translate([outer_aa/2, 0, 0])
+    cube([outer_aa+p2, outer_bb*2, outer_hh*2], center=true);
+}
+
+//left part
+translate([0, 0, outer_hh*4])
+difference() {
+    mold_form();
+    translate([-outer_aa/2, 0, 0])
+    cube([outer_aa+p2, outer_bb*2, outer_hh*2], center=true);
+}
+
+//part1
+translate([0, 0, outer_hh*6])
+difference() {
+    mold_form();
+    translate([-outer_aa/2, 0, 0])
+    cube([outer_aa+p2, outer_bb*2, outer_hh*2], center=true);
+    translate([0, -outer_bb/2, 0])
+    cube([outer_aa*2, outer_bb+p2, outer_hh*2], center=true);
+}
+
+//part2
+translate([0, 0, outer_hh*8])
+difference() {
+    mold_form();
+    translate([-outer_aa/2, 0, 0])
+    cube([outer_aa+p2, outer_bb*2, outer_hh*2], center=true);
+    translate([0, outer_bb/2, 0])
+    cube([outer_aa*2, outer_bb+p2, outer_hh*2], center=true);
+}
+
+//part3
+translate([0, 0, outer_hh*10])
+difference() {
+    mold_form();
+    translate([outer_aa/2, 0, 0])
+    cube([outer_aa+p2, outer_bb*2, outer_hh*2], center=true);
+    translate([0, -outer_bb/2, 0])
+    cube([outer_aa*2, outer_bb+p2, outer_hh*2], center=true);
+}
+
+//part4
+translate([0, 0, outer_hh*12])
+difference() {
+    mold_form();
+    translate([outer_aa/2, 0, 0])
+    cube([outer_aa+p2, outer_bb*2, outer_hh*2], center=true);
+    translate([0, outer_bb/2, 0])
+    cube([outer_aa*2, outer_bb+p2, outer_hh*2], center=true);
+}
