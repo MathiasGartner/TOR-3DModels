@@ -122,6 +122,7 @@ module motorMount(hullOnLeft=true) {
             hole(h=holder_h*2);
             cube([nut_sq_s, nut_sq_s, nut_sq_m], center=true);
         }
+        translate([0.2, 0, 0] * (hullOnLeft ? -1 : 1)) //this translation is just empiric to fit the hull holes when printed
         rotate([0, 0, angle2])
         translate([hull_hole_distance, hull_hole_distance, -(holder_h/2+p)+nut_sq_m/2]) {        
             hole(h=holder_h*2);

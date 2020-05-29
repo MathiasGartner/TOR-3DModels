@@ -102,8 +102,8 @@ module holder_bottom() {
 }
 
 union() {
-    //magnet();
+    magnet();
     holder();   
-    //holder_bottom();
+    holder_bottom();
 }
 
