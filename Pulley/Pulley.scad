@@ -49,7 +49,7 @@ h_wp = h_w + h_p;
 h_r_inner = fix_r + 1;
 h_r_outer = pulley_r + h_wp + 0.5;
 h_bottom_extra = 0.0;
-h_h1 = pulley_h + 2*h_wp + 3*h_p;
+h_h1 = pulley_h + 2*h_wp + 3*h_p + 0.5;
 //h_screw_length = 8+2;
 h_h2 = pulley_h + fix_h + 2.5; echo("h_h2", h_h2);
 h_wire_distance = 1.5;
@@ -66,12 +66,12 @@ hull_poly = [[0, 0],
              [h_r_inner, h_h2 + 1],
              [h_r_inner+2.2, h_h2 + 1],
              [h_r_inner+2.2, h_h1 - h_w],
-             [pulley_r + h_p, h_h1 - h_w],
-             [pulley_r + h_p, h_h1 - h_ramp_outer - 3*h_p],
+             [pulley_r + h_p + 0.3, h_h1 - h_w],
+             [pulley_r + h_p + 0.3, h_h1 - h_ramp_outer - 3*h_p],
              [ramp_flat_r + h_wire_distance+1, ramp_h/2+ramp_flat_width+1.2],
              [ramp_flat_r + h_wire_distance+1, ramp_h/2+0.5],
-             [pulley_r + h_p, h_ramp_outer + 2*h_p],
-             [pulley_r + h_p, h_w],
+             [pulley_r + h_p + 0.3, h_ramp_outer + 2*h_p + 0.5],
+             [pulley_r + h_p + 0.3, h_w],
              [0, h_w]
             ];
 

@@ -42,8 +42,9 @@ mount_hole_d = 6;
 th = 3;
 tht = 5;
 md = 3;
-sw_min = 6;
-sw = sw_min + 1;
+sw_min = 5.5;
+sw_extra = 1.5;
+sw = sw_min + sw_extra;
 
 m_w = 42.3;
 m_h = 42.3;
@@ -58,7 +59,7 @@ bottom_a = m_w + 2 * th + 2 * sw;
 bottom_b = m_t + tht;
 bottom_h = th;
 
-bottom_hole_pad = sw / 2;
+bottom_hole_pad = (sw + sw_extra) / 2;
 bha = bottom_a / 2 - bottom_hole_pad;
 bhb = bottom_b / 2 - bottom_hole_pad;
 
@@ -231,8 +232,19 @@ module bracketWihtoutSide() {
 union() {
     bracket(false, true, false);
     //translate([m_w+th*2, 0, 0])
-    translate([m_w+5, 0, 0]) //5mm for cables
+    cable_width = 7;
+    translate([m_w + cable_width, 0, 0])
     bracket(true, false, true);
+    
+    //color("red")
+    translate([cable_width - th - 0.5, 0, 0])
+    translate([bottom_a/2-tr1_a, -(tr2_b-tht)/2, bottom_h])
+    rotate([0, -90, 0])
+    union() {
+        triangle(tr2_a, tr2_b, cable_width - 1);
+        translate([0, -tht, 0])
+        cube([tr2_a, tht, cable_width - 1]);
+    }
 }
 
 *union() {

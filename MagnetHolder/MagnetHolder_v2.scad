@@ -93,58 +93,172 @@ module magnet_fix_hole(d, t, angle) {
     cyl(t + extra, d/2+0.1);
 }
 
+module magnet_fix_hole_rect(a, b, t, angle) {
+    extra = 1;
+    translate([sin(angle), -cos(angle), 0]*(inner_r+extra))
+    rotate([90, 0, angle])    
+    translate([0, 0, -1])
+    cube([a, b, t+2], center=true);
+}
+
 //case for magnet
 module magnet() {
-    difference() { 
-        translate([0, 0, inner_h])
-        cyl(t_top, outer_r);
-        translate([0, 0, inner_h])
-        cyl(t_top, c/2, true);
-        translate([inner_r, 0, inner_h])
-        cyl(t_top, cable_r, true);
-    }
+    h1 = 7;
+    h2 = 25;
+    cable_tunnel_h = 40;
+    cable_tunnel_r = outer_r - (outer_r - inner_r)/2;
+    cable_tunnel_t = 1.0;
+    cable_tunnel_angle = 30;
     difference() {
-        cyl(outer_h, outer_r);
-        cyl(outer_h, inner_r, true);        
-        h1 = 7;
-        h2 = 25;
-        for(i=[0:2]) {
-            translate([0, 0, h1])
-            magnet_fix_hole(6, 1, 270+(i-1)*22);
-            translate([0, 0, h2])
-            magnet_fix_hole(6, 1, 270+(i-1)*22);
+        union() {
+            difference() { 
+                translate([0, 0, inner_h])
+                cyl(t_top, outer_r);
+                translate([0, 0, inner_h])
+                cyl(t_top, c/2, true);
+                translate([inner_r, 0, inner_h])
+                cyl(t_top, cable_r, true);
+            }     
+            difference() {
+                cyl(outer_h, outer_r);
+                cyl(outer_h, inner_r, true);   
+                *for(i=[0:2]) {
+                    translate([0, 0, h1])
+                    magnet_fix_hole(6, 1, 270+(i-1)*22);
+                    translate([0, 0, h2])
+                    magnet_fix_hole(6, 1, 270+(i-1)*22);
+                } 
+                //single rect
+                *color("red")
+                for(i=[1:1]) {
+                    translate([0, 0, h1])
+                    magnet_fix_hole_rect(10, 5, 1, 270+(i-1)*30);
+                    translate([0, 0, h2])
+                    magnet_fix_hole_rect(10, 5, 1, 270+(i-1)*30);
+                } 
+                //double rect
+                *color("red")
+                for(i=[0:1]) {
+                    translate([0, 0, h1])
+                    magnet_fix_hole_rect(10, 5, 1, 270+(i-0.5)*43);
+                    translate([0, 0, h2])
+                    magnet_fix_hole_rect(10, 5, 1, 270+(i-0.5)*43);
+                } 
+                //single rect up
+                //h1=6;
+                //h2=23;
+                color("red")
+                rotate([0, 0, 180])
+                for(i=[1:1]) {
+                    translate([0, 0, h1])
+                    magnet_fix_hole_rect(5, 10, 1, 270+(i-1)*23);
+                    translate([0, 0, h2])
+                    magnet_fix_hole_rect(5, 10, 1, 270+(i-1)*23);
+                } 
+                //double rect up
+                //h1=6;
+                //h2=23;
+                *color("red")
+                for(i=[0:1]) {
+                    translate([0, 0, h1])
+                    magnet_fix_hole_rect(5, 10, 1, 270+(i-0.5)*23);
+                    translate([0, 0, h2])
+                    magnet_fix_hole_rect(5, 10, 1, 270+(i-0.5)*23);
+                } 
+                *color("red") {
+                    translate([0, 0, h1])
+                    magnet_fix_hole(5, 1.5, 90);
+                    translate([0, 0, h2])
+                    magnet_fix_hole(5, 1.5, 90);
+                    translate([0, 0, h1])
+                    magnet_fix_hole(2, 5, 90);
+                    translate([0, 0, h2])
+                    magnet_fix_hole(2, 5, 90);
+                    translate([0, 0, h1])
+                    magnet_fix_hole(8, 1, 75);
+                    translate([0, 0, h2])
+                    magnet_fix_hole(8, 1, 75);
+                }
+                *translate([0, 0, 10]) {
+                    for(i=[0:5]) {
+                        translate([0, 0, -5])
+                        magnet_fix_hole(3, 1, i*12);
+                    }
+                    for(i=[0:4]) {
+                        translate([0, 0, 5])
+                        magnet_fix_hole(4, 1, i*15+90);
+                    }
+                    for(i=[0:3]) {
+                        translate([0, 0, -5])
+                        magnet_fix_hole(5, 1, i*19+180);
+                    }
+                    for(i=[0:3]) {
+                        translate([0, 0, 5])
+                        magnet_fix_hole(6, 1, i*22+270);
+                    }
+                }
+            }
         }
-        translate([0, 0, h1])
-        magnet_fix_hole(5, 1.5, 90);
-        translate([0, 0, h2])
-        magnet_fix_hole(5, 1.5, 90);
-        translate([0, 0, h1])
-        magnet_fix_hole(2, 5, 90);
-        translate([0, 0, h2])
-        magnet_fix_hole(2, 5, 90);
-        translate([0, 0, h1])
-        magnet_fix_hole(8, 1, 75);
-        translate([0, 0, h2])
-        magnet_fix_hole(8, 1, 75);
-        *translate([0, 0, 10]) {
-            for(i=[0:5]) {
-                translate([0, 0, -5])
-                magnet_fix_hole(3, 1, i*12);
+        rotate([0, 0, -90]) {
+            color("red")
+            translate([0, 0, h1+2])
+            translate([0, 0, cable_tunnel_h/2])
+            translate([sin(cable_tunnel_angle), cos(cable_tunnel_angle), 0]*cable_tunnel_r)
+            cylinder(r=cable_tunnel_t, h=cable_tunnel_h, center=true);
+            
+            color("red")
+            rotate([0, 0, -cable_tunnel_angle])
+            translate([0, cable_tunnel_r-cable_tunnel_t/2+0.3, 0])
+            translate([0, 0, h1+2])    
+            translate([0, 0, 0.5])    
+            difference() {
+                rotate([30, 0, 0])
+                translate([0, 0, -cable_tunnel_h/2])
+                cylinder(r=cable_tunnel_t, h=cable_tunnel_h, center=true);
+                translate([0, 0, 9.5])
+                cube([20, 20, 20], center=true);
             }
-            for(i=[0:4]) {
-                translate([0, 0, 5])
-                magnet_fix_hole(4, 1, i*15+90);
-            }
-            for(i=[0:3]) {
-                translate([0, 0, -5])
-                magnet_fix_hole(5, 1, i*19+180);
-            }
-            for(i=[0:3]) {
-                translate([0, 0, 5])
-                magnet_fix_hole(6, 1, i*22+270);
+            
+            color("red")
+            translate([0, 0, h2+2])
+            translate([0, 0, cable_tunnel_h/2])
+            translate([sin(-cable_tunnel_angle), cos(-cable_tunnel_angle), 0]*cable_tunnel_r)
+            cylinder(r=cable_tunnel_t, h=cable_tunnel_h, center=true);
+            
+            color("red")
+            rotate([0, 0, cable_tunnel_angle])
+            translate([0, cable_tunnel_r-cable_tunnel_t/2+0.3, 0])
+            translate([0, 0, h2+2])    
+            translate([0, 0, 0.5])    
+            difference() {
+                rotate([30, 0, 0])
+                translate([0, 0, -cable_tunnel_h/2])
+                cylinder(r=cable_tunnel_t, h=cable_tunnel_h, center=true);
+                translate([0, 0, 9.5])
+                cube([20, 20, 20], center=true);
             }
         }
-    }    
+    }   
+    *rotate([0, 0, -90]) {
+        color("red")
+        translate([0, 0, h2+2])
+        translate([0, 0, cable_tunnel_h/2])
+        translate([sin(-cable_tunnel_angle), cos(-cable_tunnel_angle), 0]*cable_tunnel_r)
+        cylinder(r=cable_tunnel_t, h=cable_tunnel_h, center=true);
+        
+        color("red")
+        rotate([0, 0, cable_tunnel_angle])
+        translate([0, cable_tunnel_r-cable_tunnel_t/2+0.3, 0])
+        translate([0, 0, h2+2])    
+        translate([0, 0, 0.5])    
+        difference() {
+            rotate([30, 0, 0])
+            translate([0, 0, -cable_tunnel_h/2])
+            cylinder(r=cable_tunnel_t, h=cable_tunnel_h, center=true);
+            translate([0, 0, 9.5])
+            cube([20, 20, 20], center=true);
+        }
+    }
 }
 
 //mount that is fixed on magnet case with screw
@@ -172,7 +286,20 @@ module top_fix() {
 module top_bottom() {
     difference() {
         cyl(top_bottom_h, top_ring_r2, false);
-        cyl(top_bottom_h+p, c/2, true);
+        cyl(2*top_bottom_h+p, c/2, true);
+    }
+}
+
+module top_cap() {
+    cable_thickness = 2.0;
+    cap_t = 1.0 * top_bottom_h;
+    cap_h = cap_t + cable_thickness;
+    difference() {
+        union() {
+            cyl(cap_t, inner_r);
+            cyl(cap_h, c);
+        }
+        cyl(cap_h, c/2, true);
     }
 }
 
@@ -205,10 +332,10 @@ module top_cords() {
     }
 }
 
-*translate([20, 0, 0])
+translate([20, 0, 0])
 top_cords();
 
-//translate([0, -30, 0])
+translate([0, -30, 0])
 magnet();
 
 //magnet case with top fix
@@ -219,8 +346,11 @@ union() {
     top_fix();   
 }
 
-*union() {
+union() {
     top_bottom();
     translate([0, 0, top_bottom_h])
     top_fix();
 }
+
+translate([-30, 0, 0])
+top_cap();
