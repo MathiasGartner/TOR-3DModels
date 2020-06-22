@@ -45,9 +45,13 @@ screw_head_height = 5.0;
 
 inner_h = b;
 inner_r = a/2+0.2;
-t_side = 3;
-t_top = 3;
-outer_h = inner_h + t_top;
+t_side = 3.5;
+t_top = 2;
+top_bottom_h = 1.0;
+cap_cable_thickness = 2.0;
+cap_t = 1.0 * top_bottom_h;
+cap_h = cap_t + cap_cable_thickness;
+outer_h = inner_h + t_top + cap_h - cap_t;
 outer_r = inner_r + t_side;
 echo(outer_h);
 
@@ -79,8 +83,6 @@ single_hole = false;
 multi_hole_offset = 1.0;
 mhs = multi_hole_offset;
 
-top_bottom_h = 1.0;
-
 module cyl(h, r, addP2 = false) {
     translate([0, 0, h/2])
     cylinder(h + (addP2 ? p2 : 0), r=r, center=true);
@@ -103,11 +105,13 @@ module magnet_fix_hole_rect(a, b, t, angle) {
 
 //case for magnet
 module magnet() {
+    magnet_center_spacing = 18;
     h1 = 7;
-    h2 = 25;
-    cable_tunnel_h = 40;
-    cable_tunnel_r = outer_r - (outer_r - inner_r)/2;
-    cable_tunnel_t = 1.0;
+    h2 = h1 + magnet_center_spacing;
+    cable_tunnel_h1 = inner_h - h1;
+    cable_tunnel_h2 = inner_h - h2;
+    cable_tunnel_r = outer_r - (outer_r - inner_r)/2 - 0.4;
+    cable_tunnel_t = 1.2;
     cable_tunnel_angle = 30;
     difference() {
         union() {
@@ -199,66 +203,116 @@ module magnet() {
                 }
             }
         }
+        //cable tunnel
         rotate([0, 0, -90]) {
+            //1
             color("red")
             translate([0, 0, h1+2])
-            translate([0, 0, cable_tunnel_h/2])
+            translate([0, 0, cable_tunnel_h1/2])
             translate([sin(cable_tunnel_angle), cos(cable_tunnel_angle), 0]*cable_tunnel_r)
-            cylinder(r=cable_tunnel_t, h=cable_tunnel_h, center=true);
+            cylinder(r=cable_tunnel_t, h=cable_tunnel_h1+p, center=true);
             
-            color("red")
+            color("grey")
             rotate([0, 0, -cable_tunnel_angle])
             translate([0, cable_tunnel_r-cable_tunnel_t/2+0.3, 0])
             translate([0, 0, h1+2])    
             translate([0, 0, 0.5])    
             difference() {
                 rotate([30, 0, 0])
-                translate([0, 0, -cable_tunnel_h/2])
-                cylinder(r=cable_tunnel_t, h=cable_tunnel_h, center=true);
+                translate([0, 0, -cable_tunnel_h1/2])
+                cylinder(r=cable_tunnel_t*1.1, h=cable_tunnel_h1, center=true);
                 translate([0, 0, 9.5])
                 cube([20, 20, 20], center=true);
             }
             
+            color("blue")
+            rotate([0, 0, -cable_tunnel_angle])
+            translate([0, cable_tunnel_r-cable_tunnel_t/2+0.3, 0])
+            translate([0, 0, inner_h])    
+            rotate([180, 0, 0])
+            translate([0, 0, 0.5+p])    
+            difference() {
+                rotate([40, 0, 0])
+                translate([0, 0, -cable_tunnel_h1/2])
+                cylinder(r=cable_tunnel_t*1.5, h=cable_tunnel_h1, center=true);
+                translate([0, 0, 9.5])
+                cube([20, 20, 20], center=true);
+            }
+                        
+            rotate([0, 0, 90])
+            rotate([0, 0, -cable_tunnel_angle])
+            translate([0, 0, cable_tunnel_h2 + 2*cable_tunnel_t])
+            rotate_extrude(angle=cable_tunnel_angle/2)
+            translate([outer_r, 0, 0])
+            circle(cable_tunnel_t*1.5);
+            
+            color("orange")
+            translate([0, 0, inner_h+cap_h])
+            translate([sin(cable_tunnel_angle), cos(cable_tunnel_angle), 0]*(cable_tunnel_r-0.5))
+            cylinder(r=cable_tunnel_t*1.5, h=cap_h, center=true);
+                             
+            color("green")
+            rotate([0, 0, 90])
+            translate([0, 0, cable_tunnel_h2 + 2*cable_tunnel_t])
+            translate([cos(-cable_tunnel_angle), sin(-cable_tunnel_angle), 0]*(cable_tunnel_r-0.5))
+            rotate([0, 0, -cable_tunnel_angle])
+            rotate([90, 0, 90])
+            cylinder(r=1, h=t_side*2, center=true);
+            
+            //2
             color("red")
             translate([0, 0, h2+2])
-            translate([0, 0, cable_tunnel_h/2])
+            translate([0, 0, cable_tunnel_h2/2])
             translate([sin(-cable_tunnel_angle), cos(-cable_tunnel_angle), 0]*cable_tunnel_r)
-            cylinder(r=cable_tunnel_t, h=cable_tunnel_h, center=true);
+            cylinder(r=cable_tunnel_t, h=cable_tunnel_h2+p, center=true);
             
-            color("red")
+            color("grey")
             rotate([0, 0, cable_tunnel_angle])
             translate([0, cable_tunnel_r-cable_tunnel_t/2+0.3, 0])
             translate([0, 0, h2+2])    
             translate([0, 0, 0.5])    
             difference() {
                 rotate([30, 0, 0])
-                translate([0, 0, -cable_tunnel_h/2])
-                cylinder(r=cable_tunnel_t, h=cable_tunnel_h, center=true);
+                translate([0, 0, -cable_tunnel_h2/2])
+                cylinder(r=cable_tunnel_t*1.1, h=2*cable_tunnel_h2, center=true);
                 translate([0, 0, 9.5])
                 cube([20, 20, 20], center=true);
             }
+            color("blue")
+            rotate([0, 0, cable_tunnel_angle])
+            translate([0, cable_tunnel_r-cable_tunnel_t/2+0.3, 0])
+            translate([0, 0, inner_h])    
+            rotate([180, 0, 0])
+            translate([0, 0, 0.5+p])    
+            difference() {
+                rotate([40, 0, 0])
+                translate([0, 0, -cable_tunnel_h2/2])
+                cylinder(r=cable_tunnel_t*1.5, h=2*cable_tunnel_h2, center=true);
+                translate([0, 0, 9.5])
+                cube([20, 20, 20], center=true);
+            }
+            
+            rotate([0, 0, 90])
+            rotate([0, 0, cable_tunnel_angle])
+            translate([0, 0, cable_tunnel_h1 + 2*cable_tunnel_t])
+            rotate_extrude(angle=-cable_tunnel_angle/2)
+            translate([outer_r, 0, 0])
+            circle(cable_tunnel_t*1.5);
+            
+            color("orange")
+            translate([0, 0, inner_h+cap_h])
+            translate([sin(-cable_tunnel_angle), cos(-cable_tunnel_angle), 0]*(cable_tunnel_r-0.5))
+            cylinder(r=cable_tunnel_t*1.5, h=cap_h, center=true);
+                             
+            color("green")
+            rotate([0, 0, 90])
+            translate([0, 0, cable_tunnel_h1 + 2*cable_tunnel_t])
+            translate([cos(cable_tunnel_angle), sin(cable_tunnel_angle), 0]*(cable_tunnel_r-0.5))
+            rotate([0, 0, cable_tunnel_angle])
+            rotate([90, 0, 90])
+            cylinder(r=1, h=t_side*2, center=true);
         }
-    }   
-    *rotate([0, 0, -90]) {
-        color("red")
-        translate([0, 0, h2+2])
-        translate([0, 0, cable_tunnel_h/2])
-        translate([sin(-cable_tunnel_angle), cos(-cable_tunnel_angle), 0]*cable_tunnel_r)
-        cylinder(r=cable_tunnel_t, h=cable_tunnel_h, center=true);
-        
-        color("red")
-        rotate([0, 0, cable_tunnel_angle])
-        translate([0, cable_tunnel_r-cable_tunnel_t/2+0.3, 0])
-        translate([0, 0, h2+2])    
-        translate([0, 0, 0.5])    
-        difference() {
-            rotate([30, 0, 0])
-            translate([0, 0, -cable_tunnel_h/2])
-            cylinder(r=cable_tunnel_t, h=cable_tunnel_h, center=true);
-            translate([0, 0, 9.5])
-            cube([20, 20, 20], center=true);
-        }
-    }
+    }    
 }
 
 //mount that is fixed on magnet case with screw
@@ -290,13 +344,10 @@ module top_bottom() {
     }
 }
 
-module top_cap() {
-    cable_thickness = 2.0;
-    cap_t = 1.0 * top_bottom_h;
-    cap_h = cap_t + cable_thickness;
+module top_cap() {    
     difference() {
         union() {
-            cyl(cap_t, inner_r);
+            cyl(cap_t, outer_r);
             cyl(cap_h, c);
         }
         cyl(cap_h, c/2, true);
@@ -346,7 +397,7 @@ union() {
     top_fix();   
 }
 
-union() {
+*union() {
     top_bottom();
     translate([0, 0, top_bottom_h])
     top_fix();
