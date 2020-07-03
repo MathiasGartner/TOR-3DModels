@@ -30,7 +30,7 @@ b = 29;
 c = 5.5;
 cable_r = 3.5;
 top_offset = 5.2;
-screw_head_height = 5.0;
+screw_head_height = 3.0;
 //*/
 
 //300N
@@ -57,7 +57,7 @@ echo(outer_h);
 
 top_count = 4;
 top_angle = 80;
-top_a = 2.5;
+top_a = 3.0;
 top_h = 8;
 top_hh = 5;
 top_ring_h = 2;
@@ -125,13 +125,24 @@ module magnet() {
             }     
             difference() {
                 cyl(outer_h, outer_r);
-                cyl(outer_h, inner_r, true);   
+                cyl(outer_h, inner_r, true);
                 *for(i=[0:2]) {
                     translate([0, 0, h1])
                     magnet_fix_hole(6, 1, 270+(i-1)*22);
                     translate([0, 0, h2])
                     magnet_fix_hole(6, 1, 270+(i-1)*22);
-                } 
+                }                 
+                //M2 
+                rotate([0, 0, 180]) {
+                    translate([0, 0, h1]) {
+                        magnet_fix_hole_rect(4, 4, 1.2, 270);
+                        magnet_fix_hole(2, 10, 270);
+                    }
+                    translate([0, 0, h2]) {
+                        magnet_fix_hole_rect(4, 4, 1.2, 270);                
+                        magnet_fix_hole(2, 10, 270);
+                    }
+                }
                 //single rect
                 *color("red")
                 for(i=[1:1]) {
@@ -151,7 +162,7 @@ module magnet() {
                 //single rect up
                 //h1=6;
                 //h2=23;
-                color("red")
+                *color("red")
                 rotate([0, 0, 180])
                 for(i=[1:1]) {
                     translate([0, 0, h1])
@@ -397,7 +408,7 @@ union() {
     top_fix();   
 }
 
-*union() {
+union() {
     top_bottom();
     translate([0, 0, top_bottom_h])
     top_fix();

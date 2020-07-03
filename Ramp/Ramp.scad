@@ -10,14 +10,19 @@ b = 189;
 h = 16;
 angle = 40;
 
-acryl_form_diff = 1; //form is 1 mm smaller than acryl
+acryl_form_diff = 1; //form is 1 mm smaller than acryl on each side
 
-flex_a = 18;
+acryl_a = 290;
+acryl_b = 189;
+
+flex_a = 16;
 flex_b = 5.5;//0.5;
 
-cable_a = 7.8;
-cable_b = 5.2;
-cable_x = a/2 - cable_a/2 - 8 + acryl_form_diff;
+cable_x1_acryl = 253.3;
+cable_x2_acryl = 260.2;
+cable_a = cable_x2_acryl - cable_x1_acryl + 1;
+cable_b = 10;
+cable_x = cable_x1_acryl - acryl_a/2 + cable_a/2;
 
 //cable_a = 6;
 //cable_b = 6;
@@ -43,22 +48,35 @@ outer_aa = outer_a + 1.0 * outer_border;
 outer_bb = outer_b + 1.0 * outer_border;
 outer_hh = outer_h + 0.5 * outer_border - p;
 
-cord_hole_d = 8;
-cord_hole_dx = 7.7; //left spacing to center of hole
-cord_hole_dy = 26.59;
+cord_hole_d = 9;
+cord_hole_dx = 11.5; //left spacing to center of hole
+cord_hole_dy = 31.59;
 cord_hole_x = a/2 - cord_hole_dx + acryl_form_diff;
 cord_hole_y = cord_hole_dy;
 
-steel_hole_d = 3.2;
+steel_hole_d = 3.5;
 steel_hole_dx = 4;
 steel_hole_dy = 2.7;
 steel_hole_x = a/2 - steel_hole_dx + acryl_form_diff;
 steel_hole_y = steel_hole_dy;
 
+screw_x_arcyl = 11.5;
+screw_y_arcyl = 11.5;
+screw_x = a/2 - screw_x_arcyl + acryl_form_diff;
+screw_y = 11.5;
+screw_s = 6.0;
+screw_h = 2.0;
+
 module form_hole(x, y, d) {
     translate([x, y, 0])
     rotate([angle, 0, 0])
     cylinder(4*h, d=d, center=true);    
+}
+
+module form_hole_rect(x, y, a, b) {
+    translate([x, y, 0])
+    rotate([angle, 0, 0])
+    cube([a, b, 4*h], center=true);    
 }
 
 module form()  {
@@ -83,7 +101,9 @@ module form()  {
         
         //steel holes
         form_hole(-steel_hole_x, steel_hole_y, steel_hole_d);
+        form_hole_rect(-steel_hole_x - steel_hole_d, steel_hole_y, steel_hole_d*2, steel_hole_d);
         form_hole(steel_hole_x, steel_hole_y, steel_hole_d);       
+        form_hole_rect(steel_hole_x + steel_hole_d, steel_hole_y, steel_hole_d*2, steel_hole_d);       
         
         //flex cable (+led)
         translate([0, -top_b-p, 0])
@@ -107,13 +127,22 @@ module form()  {
         translate([0, 0, -h*3])
         //cube([cable_a, cable_b+p, h*2]);    
         cylinder(6*h, r=cable_r);*/
+        
+        //screws
+        translate([screw_x, screw_y, screw_h/2])
+        cube([screw_s, screw_s, screw_h+p], center=true);
+        translate([-screw_x, screw_y, screw_h/2])
+        cube([screw_s, screw_s, screw_h+p], center=true);
+        translate([screw_x, b - screw_y, screw_h/2])
+        cube([screw_s, screw_s, screw_h+p], center=true);
+        translate([-screw_x, b - screw_y, screw_h/2])
+        cube([screw_s, screw_s, screw_h+p], center=true);
     }    
     //holder
-    translate([holder_x, holder_y, -holder_h/2])
-    cube([holder_a, holder_b, holder_h+p], center=true);
-    translate([-holder_x, holder_y, -holder_h/2])
-    cube([holder_a, holder_b, holder_h+p], center=true);   
-    
+    //translate([holder_x, holder_y, -holder_h/2])
+    //cube([holder_a, holder_b, holder_h+p], center=true);
+    //translate([-holder_x, holder_y, -holder_h/2])
+    //cube([holder_a, holder_b, holder_h+p], center=true);   
 }
 
 module mold_form() {
@@ -139,8 +168,6 @@ module mold_form() {
 }
 
 module acryl() {
-    acryl_a = 290;
-    acryl_b = 189;
     difference() {
         translate([0, 0, acryl_h/2])
         cube([acryl_a, acryl_b, acryl_h], center=true);
@@ -220,13 +247,15 @@ module dummy() {
     cube([outer_aa*2, outer_bb+p2, outer_hh*2], center=true);
 }
 
+*form();
+
 //mold_form
 mold_form();
 
 translate([0, 0, 0]) {
 
 //right part
-translate([0, 0, outer_hh*2])
+*translate([0, 0, outer_hh*2])
 difference() {
     mold_form();
     translate([outer_aa/2, 0, 0])
@@ -234,7 +263,7 @@ difference() {
 }
 
 //left part
-translate([0, 0, outer_hh*4])
+*translate([0, 0, outer_hh*4])
 difference() {
     mold_form();
     translate([-outer_aa/2, 0, 0])

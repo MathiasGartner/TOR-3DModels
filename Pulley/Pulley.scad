@@ -28,7 +28,7 @@ fix_h = 5.5;
 fix_r = 9.2;
 
 hole_h = pulley_h + fix_h;
-hole_d = 5.2;
+hole_d = 5.1;
 hole_cut = 0.5;
 
 hole_screw_h = fix_r;
@@ -56,9 +56,10 @@ h_wire_distance = 1.5;
 h_ramp_outer = h_w + 2*h_p + ramp_h_offset/2;
 h_ramp_inner = h_w + 2*h_p + ramp_h_offset;
 r_screw_top = 5.5;
+h_w_extra = 0.3;
 
-hull_poly = [[0, 0], 
-             [h_r_outer, 0], 
+hull_poly = [[0, -h_w_extra], 
+             [h_r_outer, -h_w_extra], 
              [h_r_outer, h_h2 - 1.4],
              [h_r_outer + r_screw_top, h_h2 - 1.4],
              [h_r_outer + r_screw_top, h_h2 + h_w + 1],
@@ -71,8 +72,8 @@ hull_poly = [[0, 0],
              [ramp_flat_r + h_wire_distance+1, ramp_h/2+ramp_flat_width+1.2],
              [ramp_flat_r + h_wire_distance+1, ramp_h/2+0.5],
              [pulley_r + h_p + 0.3, h_ramp_outer + 2*h_p + 0.5],
-             [pulley_r + h_p + 0.3, h_w],
-             [0, h_w]
+             [pulley_r + h_p + 0.3, h_w - h_w_extra],
+             [0, h_w - h_w_extra]
             ];
 
 module hole(h, d) {
@@ -86,11 +87,12 @@ module hull(hullOnLeft=true) {
         translate([0, 0, -h_wp-h_p])
         rotate_extrude(angle=hull_angle)
         polygon(hull_poly);       
+        // - (hullOnLeft ? 0.0 : 0.2): is an empiric value to fit the motor bracket
         rotate([0, 0, hull_angle/4*1])
-        translate([h_r_outer + r_screw_top/2, 0, h_h2])
-        hole(8, 3); 
+        translate([h_r_outer + r_screw_top/2 - (hullOnLeft ? 0.0 : 0.2), 0, h_h2])
+        hole(8, 3);
         rotate([0, 0, hull_angle/4*3])
-        translate([h_r_outer + r_screw_top/2, 0, h_h2])
+        translate([h_r_outer + r_screw_top/2 - (hullOnLeft ? 0.2 : 0.0), 0, h_h2])
         hole(8, 3);
         motor_hole_distance_from_center = 31 * sqrt(2) / 2;
         //holes in motor mount have to be left out
@@ -157,6 +159,12 @@ module pulley() {
     cylinder((pulley_h - ramp_h) / 2, r=pulley_r, center=true);
     translate([0, 0, 0.5])
     cylinder(1, r=pulley_r/2, center=true);
+    
+    //D-shaft
+    shaft_h = pulley_h + (fix_h - hole_screw_d)/2 - p;
+    shaft_t = 0.5;
+    translate([0, -hole_d/2, shaft_h/2])
+    cube([hole_d, 2*shaft_t, shaft_h], center=true);
 }
 
 pulley();

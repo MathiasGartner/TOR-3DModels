@@ -134,6 +134,7 @@ module motorMount(hullOnLeft=true) {
 
 module bracket(hasStabilizerLeft=true, hasStabilizerRight=true, hullOnLeft=true) {
     //bottom
+    echo(bha, bhb, bha*2, bhb*2);
     translate([0, 0, bottom_h/2])
     difference() {
         cube([bottom_a, bottom_b, bottom_h], center=true);

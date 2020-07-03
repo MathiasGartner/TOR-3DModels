@@ -3,14 +3,14 @@ $fs=0.03;
 p = 0.05;
 p2 = 2*p;
 
-size = 22;
+size = 20;
 hole_d = 18;
 hole_extra = 0.5;
 sphere_factor = 1.35;
 
 module infill_pattern() {
     t = 2.0; //thickness of lines
-    s = 3; //spacing between lines
+    s = 8.0; //spacing between lines
     w = t + s;
     c = size / w - (size / w) % 1;
     echo(c);
@@ -48,15 +48,16 @@ module dice(dice_size=20, half=false, hole=false) {
 }
 
 module dice_and_infill() {
+    w = 2; //thickness of wall
     union() {
         intersection() {    
-            $fn = 20;  
+            $fn = 40;  
             dice(dice_size = size - 1);
             infill_pattern();
         }
         difference() {
             dice(dice_size = size, half=false);
-            dice(dice_size = size - 3);
+            dice(dice_size = size - w);
         }
     }
 }
