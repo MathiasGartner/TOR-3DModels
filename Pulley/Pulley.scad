@@ -56,7 +56,7 @@ h_wire_distance = 1.5;
 h_ramp_outer = h_w + 2*h_p + ramp_h_offset/2;
 h_ramp_inner = h_w + 2*h_p + ramp_h_offset;
 r_screw_top = 5.5;
-h_w_extra = 0.3;
+h_w_extra = 0.8;
 
 hull_poly = [[0, -h_w_extra], 
              [h_r_outer, -h_w_extra], 
@@ -98,9 +98,10 @@ module hull(hullOnLeft=true) {
         //holes in motor mount have to be left out
         rotate([0, 0, hullOnLeft ? -20 : 20]) {
             for (i = [0:3]) {
-                rotate([0, 0, i*90])
+                //(i == 1 ? 2 : 0) * (hullOnLeft ? +1 : -1): is an empiric value to fit the motor bracket
+                rotate([0, 0, i*90 + (i == 1 ? 0.8 : 0) * (hullOnLeft ? +1 : -1)])
                 translate([motor_hole_distance_from_center, 0, h_h2])
-                hole(8, r_screw_top);
+                hole(8, r_screw_top+0.5);
             }
         }
     }
