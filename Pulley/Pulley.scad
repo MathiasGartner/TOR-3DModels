@@ -170,9 +170,9 @@ module pulley() {
 
 pulley();
 
-color("red")
+*color("red")
 hull();
 
-translate([0, 30, 0])
+*translate([0, 30, 0])
 color("red")
 hull(false);

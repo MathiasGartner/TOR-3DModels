@@ -9,8 +9,8 @@ hole_extra = 0.5;
 sphere_factor = 1.35;
 
 module infill_pattern() {
-    t = 2.0; //thickness of lines
-    s = 8.0; //spacing between lines
+    t = 1.3; //thickness of lines
+    s = 5; //spacing between lines
     w = t + s;
     c = size / w - (size / w) % 1;
     echo(c);
@@ -48,7 +48,7 @@ module dice(dice_size=20, half=false, hole=false) {
 }
 
 module dice_and_infill() {
-    w = 2; //thickness of wall
+    w = 1.3; //thickness of wall
     union() {
         intersection() {    
             $fn = 40;  
@@ -57,7 +57,7 @@ module dice_and_infill() {
         }
         difference() {
             dice(dice_size = size, half=false);
-            dice(dice_size = size - w);
+            dice(dice_size = size - 2*w);
         }
     }
 }
