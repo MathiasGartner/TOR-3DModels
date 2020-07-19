@@ -76,11 +76,11 @@ top_total_h = top_down_h + top_fix_offset;
 
 cord_h = top_down_h - (top_up_h - top_side_h);
 cord_hole_single_r = 1.0;
-cord_hole_multi_r = 0.7;
+cord_hole_multi_r = 0.6;
 angle_diff = 2;
 h_diff = 0.5;
 single_hole = false;
-multi_hole_offset = 1.0;
+multi_hole_offset = 2.0;
 mhs = multi_hole_offset;
 
 magnet_center_spacing = 14;
@@ -115,7 +115,7 @@ module magnet_fix_hole_rect(a, b, t, angle, outside=false) {
     cube([a, b, t+2], center=true);
 }
 
-//case for magnet
+//magnet holder
 module magnet() {    
     cable_tunnel_h1 = inner_h - h1;
     cable_tunnel_h2 = inner_h - h2;
@@ -138,6 +138,7 @@ module magnet() {
                 //M2 screws
                 m2_nut_depth = 1.2;
                 m2_nut_d = m2_nut_depth + 0.4;
+                m2_nut_d_extra = m2_nut_depth + 1.9;
                 rotate([0, 0, 180]) {
                     translate([0, 0, h1]) {
                         magnet_fix_hole_rect(4, 4, m2_nut_d, 270);
@@ -149,13 +150,14 @@ module magnet() {
                     }
                     rotate([0, 0, case_screw_angle])
                     translate([0, 0, h_case1]) {
-                        magnet_fix_hole_rect(4.2, 4.2, m2_nut_d, 270, true);   
+                        //magnet_fix_hole_rect(4.2, 4.2, m2_nut_d, 270, true); //outside
+                        magnet_fix_hole_rect(4, 4, m2_nut_d_extra, 270); //inside
                         magnet_fix_hole(2, 10, 270);
                     }
                     rotate([0, 0, -case_screw_angle])
                     translate([0, 0, h_case1]) {
                         //magnet_fix_hole_rect(4.2, 4.2, m2_nut_d, 270, true);                
-                        magnet_fix_hole_rect(4, 4, m2_nut_d, 270);               
+                        magnet_fix_hole_rect(4, 4, m2_nut_d_extra, 270);               
                         magnet_fix_hole(2, 10, 270);
                     }
                 }
@@ -358,6 +360,7 @@ module top_cords() {
         union() {
             cyl(cord_h, top_ring_r1-0.1);
             rotate(-(top_up_angle-angle_diff) / 2)
+            rotate([0, 0, 45])
             for(i=[1:top_count]) {
                 rotate(i*360/top_count) {
                     rotate_extrude(angle=top_up_angle-angle_diff)

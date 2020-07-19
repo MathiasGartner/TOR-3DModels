@@ -28,7 +28,7 @@ fix_h = 5.5;
 fix_r = 9.2;
 
 hole_h = pulley_h + fix_h;
-hole_d = 5.1;
+hole_d = 5.2;
 hole_cut = 0.5;
 
 hole_screw_h = fix_r;
@@ -170,9 +170,9 @@ module pulley() {
 
 pulley();
 
-*color("red")
+color("red")
 hull();
 
-*translate([0, 30, 0])
+translate([0, 30, 0])
 color("red")
 hull(false);

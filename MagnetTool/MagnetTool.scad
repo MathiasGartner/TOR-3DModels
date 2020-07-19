@@ -39,8 +39,8 @@ union() {
 
 translate([0, 30, 0])
 difference() {
-    translate([0, 0, cc/2])
-    cube([6*a, 7*b, cc], center=true);
-    translate([0, 0, cc/2])
-    cube([a, b, cc+p]*1.05, center=true);
+    translate([0, 0, c/2])
+    cube([6*a, 12*b, c], center=true);
+    translate([0, 0, c/2])
+    cube([a, b, c+p]*1.05, center=true);
 }
