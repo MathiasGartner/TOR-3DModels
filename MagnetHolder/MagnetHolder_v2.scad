@@ -80,8 +80,15 @@ cord_hole_multi_r = 0.6;
 angle_diff = 2;
 h_diff = 0.5;
 single_hole = false;
+tilted_cord_holes = true;
 multi_hole_offset = 2.0;
 mhs = multi_hole_offset;
+multi_hole_tilt_angle = 13;
+mhta = multi_hole_tilt_angle;
+multi_hole_offset_tilted = 0.25;
+mhst = multi_hole_offset_tilted;
+
+top_knot_disk_h = 2;
 
 magnet_center_spacing = 14;
 h1 = 6.5;
@@ -372,15 +379,39 @@ module top_cords() {
             cyl(top_total_h, cord_hole_single_r * 2, true);
         }
         else {
-            translate([mhs, mhs, 0])
-            cyl(top_total_h, cord_hole_multi_r, true);
-            translate([mhs, -mhs, 0])
-            cyl(top_total_h, cord_hole_multi_r, true);
-            translate([-mhs, mhs, 0])
-            cyl(top_total_h, cord_hole_multi_r, true);
-            translate([-mhs, -mhs, 0])
-            cyl(top_total_h, cord_hole_multi_r, true);
+            if (tilted_cord_holes) {
+                translate([mhst, mhst, -1])
+                rotate([-mhta, mhta, 0])
+                cyl(top_total_h, cord_hole_multi_r, true);
+                translate([mhst, -mhst, -1])
+                rotate([mhta, mhta, 0])
+                cyl(top_total_h, cord_hole_multi_r, true);
+                translate([-mhst, mhst, -1])
+                rotate([-mhta, -mhta, 0])
+                cyl(top_total_h, cord_hole_multi_r, true);
+                translate([-mhst, -mhst, -1])
+                rotate([mhta, -mhta, 0])
+                cyl(top_total_h, cord_hole_multi_r, true);
+            }
+            else {
+                translate([mhs, mhs, 0])            
+                cyl(top_total_h, cord_hole_multi_r, true);
+                translate([mhs, -mhs, 0])
+                cyl(top_total_h, cord_hole_multi_r, true);
+                translate([-mhs, mhs, 0])
+                cyl(top_total_h, cord_hole_multi_r, true);
+                translate([-mhs, -mhs, 0])
+                cyl(top_total_h, cord_hole_multi_r, true);
+            }
         }
+    }
+}
+
+//disk that holds back the knot of the four cords
+module top_knot_disk() {
+    difference() {
+        cyl(top_knot_disk_h, top_ring_r1 - 0.5, false);
+        cyl(top_knot_disk_h+p2, cord_hole_multi_r * 1.3, true);
     }
 }
 
@@ -430,11 +461,16 @@ module spring_contact_case() {
     }
 }
 
-translate([20, 0, 0])
+translate([20, 30, 0])
 spring_contact_case();
 
 translate([20, 0, 0])
+//translate([0, 0, 6])
 top_cords();
+
+translate([40, 0, 0])
+//translate([0, 0, 3])
+top_knot_disk();
 
 translate([0, -30, 0])
 magnet();
