@@ -41,7 +41,7 @@ mount_hole_d = 6;
 //*
 th = 3;
 tht = 5;
-md = 3;
+md = 3.15;
 sw_min = 5.5;
 sw_extra = 1.5;
 sw = sw_min + sw_extra;
@@ -77,12 +77,19 @@ tr2_c = th;
 
 //support for side triangles
 tr1_a = (bottom_a - holder_a) / 2 - tr2_c;
-tr1_b = tr2_a*0.65;
+tr1_b = tr2_a*0.6;
 tr1_c = th;
 tr1_position = bottom_b / 5;
 
 sq_hole_a = 5.5;
 sq_hole_h = 2;
+
+nut_box_m = 2.1;
+nut_box_mm = nut_box_m + 1.4;
+nut_box_s = 5.7;
+nut_box_s_pad = nut_box_s + sw_extra;
+nut_box_stopper_h = 0.9;
+nut_box_hole_h = nut_box_mm - 0.6;
 
 module hole(h = th, d = md) {
     cylinder(h+p2, d=d, center=true);
@@ -137,27 +144,60 @@ module bracket(hasStabilizerLeft=true, hasStabilizerRight=true, hullOnLeft=true)
     echo(bha, bhb, bha*2, bhb*2);
     translate([0, 0, bottom_h/2])
     difference() {
-        cube([bottom_a, bottom_b, bottom_h], center=true);
-        translate([bha, bhb, 0])
-        hole();
-        translate([-bha, bhb, 0])
-        hole();
-        translate([bha, -bhb, 0])
-        hole();
-        translate([-bha, -bhb, 0])
-        hole();
+        union() {
+            cube([bottom_a, bottom_b, bottom_h], center=true);
+            if (hasStabilizerLeft) {
+                translate([bottom_a/2 - tr1_a/2, 0, bottom_h/2 + nut_box_mm/2])
+                cube([tr1_a, bottom_b, nut_box_mm], center=true);
+            }
+            if (hasStabilizerRight) {
+                translate([-(bottom_a/2 - tr1_a/2), 0, bottom_h/2 + nut_box_mm/2])
+                cube([tr1_a, bottom_b, nut_box_mm], center=true);
+            }
+        };
+        if (hasStabilizerLeft) {
+            translate([bottom_a/2 - tr1_a + nut_box_s/2, bottom_b/2 - nut_box_s_pad/2 + p, bottom_h/2 + nut_box_m - nut_box_stopper_h])
+            cube([nut_box_s, nut_box_s_pad, nut_box_m], center=true);
+            translate([bottom_a/2 - tr1_a + nut_box_s/2, bottom_b/2 - nut_box_s_pad/2 - sw_extra/2 + p, bottom_h/2 + nut_box_m - 2*nut_box_stopper_h])
+            cube([nut_box_s, nut_box_s, nut_box_m + nut_box_stopper_h], center=true);
+            translate([bha, bhb, nut_box_hole_h/2])
+            hole(h=bottom_h + nut_box_hole_h);
+            
+            
+            translate([bottom_a/2 - tr1_a + nut_box_s/2, -(bottom_b/2 - nut_box_s_pad/2 + p), bottom_h/2 + nut_box_m - nut_box_stopper_h])
+            cube([nut_box_s, nut_box_s_pad, nut_box_m], center=true);
+            translate([bottom_a/2 - tr1_a + nut_box_s/2, -(bottom_b/2 - nut_box_s_pad/2 - sw_extra/2 + p), bottom_h/2 + nut_box_m - 2*nut_box_stopper_h])
+            cube([nut_box_s, nut_box_s, nut_box_m + nut_box_stopper_h], center=true);
+            translate([bha, -bhb, nut_box_hole_h/2])
+            hole(h=bottom_h + nut_box_hole_h);
+        }        
+        if (hasStabilizerRight) {
+            translate([-(bottom_a/2 - tr1_a + nut_box_s/2), bottom_b/2 - nut_box_s_pad/2 + p, bottom_h/2 + nut_box_m - nut_box_stopper_h])
+            cube([nut_box_s, nut_box_s_pad, nut_box_m], center=true);
+            translate([-(bottom_a/2 - tr1_a + nut_box_s/2), bottom_b/2 - nut_box_s_pad/2 - sw_extra/2 + p, bottom_h/2 + nut_box_m - 2*nut_box_stopper_h])
+            cube([nut_box_s, nut_box_s, nut_box_m + nut_box_stopper_h], center=true);
+            translate([-bha, bhb, nut_box_hole_h/2])
+            hole(h=bottom_h + nut_box_hole_h);
+            
+            translate([-(bottom_a/2 - tr1_a + nut_box_s/2), -(bottom_b/2 - nut_box_s_pad/2 + p), bottom_h/2 + nut_box_m - nut_box_stopper_h])
+            cube([nut_box_s, nut_box_s_pad, nut_box_m], center=true);
+            translate([-(bottom_a/2 - tr1_a + nut_box_s/2), -(bottom_b/2 - nut_box_s_pad/2 - sw_extra/2 + p), bottom_h/2 + nut_box_m - 2*nut_box_stopper_h])
+            cube([nut_box_s, nut_box_s, nut_box_m + nut_box_stopper_h], center=true);
+            translate([-bha, -bhb, nut_box_hole_h/2])
+            hole(h=bottom_h + nut_box_hole_h);
+        }
     };
 
     //support for side triangles
     translate([0, -tr1_position, 0]) {
         if (hasStabilizerLeft) {
-            translate([bottom_a/2-tr1_a, tr1_c/2, bottom_h])
+            translate([bottom_a/2-tr1_a, tr1_c/2, bottom_h + nut_box_mm])
             rotate([90, 0, 0])
             triangle(tr1_a, tr1_b, tr1_c);
         }
         if (hasStabilizerRight) {
             mirror([1, 0, 0])
-            translate([bottom_a/2-tr1_a, tr1_c/2, bottom_h])
+            translate([bottom_a/2-tr1_a, tr1_c/2, bottom_h + nut_box_mm])
             rotate([90, 0, 0])
             triangle(tr1_a, tr1_b, tr1_c);
         }
@@ -166,17 +206,23 @@ module bracket(hasStabilizerLeft=true, hasStabilizerRight=true, hullOnLeft=true)
     translate([bottom_a/2-tr1_a, -(tr2_b-tht)/2, bottom_h])
     rotate([0, -90, 0])
     union() {
-        triangle(tr2_a, tr2_b, tr2_c);
+        translate([nut_box_mm, 0, 0])
+        triangle(tr2_a - nut_box_mm, tr2_b, tr2_c);
         translate([0, -tht, 0])
         cube([tr2_a, tht, th]);
+        translate([0, 0, 0])
+        cube([nut_box_mm, tr2_b, th]);
     }    
     mirror([1, 0, 0])
     translate([bottom_a/2-tr1_a, -(tr2_b-tht)/2, bottom_h])
     rotate([0, -90, 0])
     union() {
-        triangle(tr2_a, tr2_b, tr2_c);
+        translate([nut_box_mm, 0, 0])
+        triangle(tr2_a - nut_box_mm, tr2_b, tr2_c);
         translate([0, -tht, 0])
         cube([tr2_a, tht, th]);
+        translate([0, 0, 0])
+        cube([nut_box_mm, tr2_b, th]);
     }
 
     //motor mount
@@ -237,15 +283,19 @@ union() {
     translate([m_w + cable_width, 0, 0])
     bracket(true, false, true);
     
+    //fill space between individual brackets
     //color("red")
     translate([cable_width - th - 0.5, 0, 0])
     translate([bottom_a/2-tr1_a, -(tr2_b-tht)/2, bottom_h])
     rotate([0, -90, 0])
     union() {
-        triangle(tr2_a, tr2_b, cable_width - 1);
+        translate([nut_box_mm, 0, 0])
+        triangle(tr2_a - nut_box_mm, tr2_b, cable_width - 1);
         translate([0, -tht, 0])
         cube([tr2_a, tht, cable_width - 1]);
-    }
+        translate([0, 0, 0])
+        cube([nut_box_mm, tr2_b, cable_width - 1]);
+    }    
 }
 
 *union() {
