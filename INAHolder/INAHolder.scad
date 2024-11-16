@@ -9,11 +9,11 @@ sq_hole_h = 2.2;
 m2_d = 2.2;
 m3_d = 3.2;
 
-h1 = 55;
+h1 = 45;
 wx = 9;
 wy = 9;
 
-h2 = 50;
+h2 = 30;
 
 h3 = 8;
 
@@ -31,7 +31,13 @@ module hole(h, d) {
     cylinder(h+p2, d=d);
 }
 
+difference() {
+    cylinder(10, d=3);
+    cylinder(10, d=m2_d);
+}
 
+
+translate([50, 0, 0])
 difference() {
     translate([0, -wy/2, 0])
     union() {
