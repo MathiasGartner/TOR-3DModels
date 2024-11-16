@@ -41,7 +41,7 @@ mount_hole_d = 6;
 //*
 th = 3;
 tht = 5;
-md = 3.15;
+md = 3.25;
 sw_min = 5.5;
 sw_extra = 1.5;
 sw = sw_min + sw_extra;
@@ -85,7 +85,8 @@ sq_hole_a = 5.5;
 sq_hole_h = 2;
 
 nut_box_m = 2.1;
-nut_box_mm = nut_box_m + 1.4;
+nut_box_extra = 0.5;
+nut_box_mm = nut_box_m + 1.4 + nut_box_extra;
 nut_box_s = 5.7;
 nut_box_s_pad = nut_box_s + sw_extra;
 nut_box_stopper_h = 0.9;
@@ -156,35 +157,35 @@ module bracket(hasStabilizerLeft=true, hasStabilizerRight=true, hullOnLeft=true)
             }
         };
         if (hasStabilizerLeft) {
-            translate([bottom_a/2 - tr1_a + nut_box_s/2, bottom_b/2 - nut_box_s_pad/2 + p, bottom_h/2 + nut_box_m - nut_box_stopper_h])
+            translate([bottom_a/2 - tr1_a + nut_box_s/2, bottom_b/2 - nut_box_s_pad/2 + p, bottom_h/2 + nut_box_m - nut_box_stopper_h + nut_box_extra])
             cube([nut_box_s, nut_box_s_pad, nut_box_m], center=true);
-            translate([bottom_a/2 - tr1_a + nut_box_s/2, bottom_b/2 - nut_box_s_pad/2 - sw_extra/2 + p, bottom_h/2 + nut_box_m - 2*nut_box_stopper_h])
+            translate([bottom_a/2 - tr1_a + nut_box_s/2, bottom_b/2 - nut_box_s_pad/2 - sw_extra/2 + p, bottom_h/2 + nut_box_m - 2*nut_box_stopper_h + nut_box_extra])
             cube([nut_box_s, nut_box_s, nut_box_m + nut_box_stopper_h], center=true);
-            translate([bha, bhb, nut_box_hole_h/2])
-            hole(h=bottom_h + nut_box_hole_h);
+            translate([bha, bhb, 0])
+            hole(h=bottom_h + p);
             
             
-            translate([bottom_a/2 - tr1_a + nut_box_s/2, -(bottom_b/2 - nut_box_s_pad/2 + p), bottom_h/2 + nut_box_m - nut_box_stopper_h])
+            translate([bottom_a/2 - tr1_a + nut_box_s/2, -(bottom_b/2 - nut_box_s_pad/2 + p), bottom_h/2 + nut_box_m - nut_box_stopper_h + nut_box_extra])
             cube([nut_box_s, nut_box_s_pad, nut_box_m], center=true);
-            translate([bottom_a/2 - tr1_a + nut_box_s/2, -(bottom_b/2 - nut_box_s_pad/2 - sw_extra/2 + p), bottom_h/2 + nut_box_m - 2*nut_box_stopper_h])
+            translate([bottom_a/2 - tr1_a + nut_box_s/2, -(bottom_b/2 - nut_box_s_pad/2 - sw_extra/2 + p), bottom_h/2 + nut_box_m - 2*nut_box_stopper_h + nut_box_extra])
             cube([nut_box_s, nut_box_s, nut_box_m + nut_box_stopper_h], center=true);
-            translate([bha, -bhb, nut_box_hole_h/2])
-            hole(h=bottom_h + nut_box_hole_h);
+            translate([bha, -bhb, 0])
+            hole(h=bottom_h + p);
         }        
         if (hasStabilizerRight) {
-            translate([-(bottom_a/2 - tr1_a + nut_box_s/2), bottom_b/2 - nut_box_s_pad/2 + p, bottom_h/2 + nut_box_m - nut_box_stopper_h])
+            translate([-(bottom_a/2 - tr1_a + nut_box_s/2), bottom_b/2 - nut_box_s_pad/2 + p, bottom_h/2 + nut_box_m - nut_box_stopper_h + nut_box_extra])
             cube([nut_box_s, nut_box_s_pad, nut_box_m], center=true);
-            translate([-(bottom_a/2 - tr1_a + nut_box_s/2), bottom_b/2 - nut_box_s_pad/2 - sw_extra/2 + p, bottom_h/2 + nut_box_m - 2*nut_box_stopper_h])
+            translate([-(bottom_a/2 - tr1_a + nut_box_s/2), bottom_b/2 - nut_box_s_pad/2 - sw_extra/2 + p, bottom_h/2 + nut_box_m - 2*nut_box_stopper_h + nut_box_extra])
             cube([nut_box_s, nut_box_s, nut_box_m + nut_box_stopper_h], center=true);
-            translate([-bha, bhb, nut_box_hole_h/2])
-            hole(h=bottom_h + nut_box_hole_h);
+            translate([-bha, bhb, 0])
+            hole(h=bottom_h + p);
             
-            translate([-(bottom_a/2 - tr1_a + nut_box_s/2), -(bottom_b/2 - nut_box_s_pad/2 + p), bottom_h/2 + nut_box_m - nut_box_stopper_h])
+            translate([-(bottom_a/2 - tr1_a + nut_box_s/2), -(bottom_b/2 - nut_box_s_pad/2 + p), bottom_h/2 + nut_box_m - nut_box_stopper_h + nut_box_extra])
             cube([nut_box_s, nut_box_s_pad, nut_box_m], center=true);
-            translate([-(bottom_a/2 - tr1_a + nut_box_s/2), -(bottom_b/2 - nut_box_s_pad/2 - sw_extra/2 + p), bottom_h/2 + nut_box_m - 2*nut_box_stopper_h])
+            translate([-(bottom_a/2 - tr1_a + nut_box_s/2), -(bottom_b/2 - nut_box_s_pad/2 - sw_extra/2 + p), bottom_h/2 + nut_box_m - 2*nut_box_stopper_h + nut_box_extra])
             cube([nut_box_s, nut_box_s, nut_box_m + nut_box_stopper_h], center=true);
-            translate([-bha, -bhb, nut_box_hole_h/2])
-            hole(h=bottom_h + nut_box_hole_h);
+            translate([-bha, -bhb, 0])
+            hole(h=bottom_h + p);
         }
     };
 
