@@ -85,7 +85,7 @@ sq_hole_a = 5.5;
 sq_hole_h = 2;
 
 nut_box_m = 2.1;
-nut_box_extra = 0.5;
+nut_box_extra = 1.0;
 nut_box_mm = nut_box_m + 1.4 + nut_box_extra;
 nut_box_s = 5.7;
 nut_box_s_pad = nut_box_s + sw_extra;
