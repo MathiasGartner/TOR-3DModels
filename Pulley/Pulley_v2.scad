@@ -8,13 +8,13 @@ use_nut_hex = false;
 add_hole_for_wire = true;
 
 pulley_h = 11.5; //height of spindle
-pulley_r = 14; //outer radius
+pulley_r = 13.5; //outer radius
 
 ramp_flat_r = 7; //INFO: this is the diameter of the pully for the cords
 ramp_before_flat_r = ramp_flat_r + 1.9;
 ramp_r = pulley_r;
 ramp_flat_width = 1.2; //width of the area for the wire
-ramp_h_offset_top = 0.5;
+ramp_h_offset_top = 0.2;
 ramp_h = 9;
 ramp_h_offset_bottom = pulley_h - ramp_h - ramp_h_offset_top;
 ramp_h_offset = pulley_h - ramp_h;
@@ -48,7 +48,7 @@ nut_h_in = (fix_r - hole_d/2)/2 + nut_h/2;
 nut_sq_m = 2;
 nut_sq_s = 5.6;
 
-rope_hole_r = 0.9;
+rope_hole_r = 1.1;
 
 //hull
 h_w = 1;
@@ -57,14 +57,14 @@ h_wp = h_w + h_p;
 h_r_inner = fix_r + 1;
 h_r_outer = pulley_r + h_wp + 0.5;
 h_bottom_extra = 0.0;
-h_h1 = pulley_h + 2*h_wp + 3*h_p + 0.5;
+h_h1 = pulley_h + 2*h_wp + 3*h_p + 0.8;
 //h_screw_length = 8+2;
 h_h2 = pulley_h + fix_h + 2.5; echo("h_h2", h_h2);
 h_wire_distance = 1.5;
 h_ramp_outer = h_w + 2*h_p + ramp_h_offset/2;
 h_ramp_inner = h_w + 2*h_p + ramp_h_offset;
 r_screw_top = 5.5;
-h_w_extra = 0.8;
+h_w_extra = 0.8*0;
 h_screw_d = 3.3;
 
 hull_poly = [[0, -h_w_extra], 
@@ -75,12 +75,12 @@ hull_poly = [[0, -h_w_extra],
              [h_r_inner, h_h2 + h_w + 1],
              [h_r_inner, h_h2 + 1],
              [h_r_inner+2.2, h_h2 + 1],
-             [h_r_inner+2.2, h_h1 - h_w],
-             [pulley_r + h_p + 0.3, h_h1 - h_w],
+             [h_r_inner+2.2, h_h2],
+             [pulley_r + h_p + 0.3, h_h2],
              [pulley_r + h_p + 0.3, h_h1 - h_ramp_outer - 3*h_p],
-             [ramp_flat_r + h_wire_distance+1, ramp_h/2+ramp_flat_width+1.55],
-             [ramp_flat_r + h_wire_distance+1, ramp_h/2+1.55],
-             [pulley_r + h_p + 0.3, h_ramp_outer + 2*h_p + 0.5],
+             [ramp_before_flat_r + h_p + h_wire_distance, ramp_h_offset_bottom + ramp_h/2 + 2*h_p + h_wp],
+             [ramp_before_flat_r + h_p + h_wire_distance, ramp_h_offset_bottom + ramp_h/2 + h_wp],
+             [pulley_r + h_p + 0.3, h_ramp_outer + 2*h_p + 0.8],
              [pulley_r + h_p + 0.3, h_w - h_w_extra],
              [0, h_w - h_w_extra]
             ];
@@ -192,13 +192,12 @@ module pulley() {
 
 cut_h = ramp_h_offset_bottom + ramp_h/2 + ramp_flat_width/2 - p;
 in_h = 2.0;
-in_angle = 50;
-in_angle_special = 40;
-in_diff = 0.03;
-in_diff_angle = 0.5;
+in_diff = 0.05;
+in_diff_angle = 0.8;
 in_sq_h = 2;
 in_sq_d = 2.2;
-
+angleOffset = [-45, 225, 60];
+angleWidth = [60, -60, 60];
 
 *mirror([0, 0, 1])
 translate([0, 0, -pulley_h-fix_h])
@@ -210,9 +209,9 @@ difference() {
         translate([0, 0, cut_h])
         cylinder(in_h, r=ramp_flat_r+in_diff);
         translate([0, 0, cut_h + in_h - p])
-        for (i = [0:3]) {
-            rotate([0, 0, 90*i-45-(i==1?in_angle_special:in_angle)/2-in_diff_angle])
-            rotate_extrude(angle=(i==1?in_angle_special:in_angle)+in_diff_angle*2)
+        for (i = [0:2]) {
+            rotate([0, 0, angleOffset[i]-in_diff_angle])
+            rotate_extrude(angle=angleWidth[i]+in_diff_angle*2)
             translate([ramp_flat_r-in_sq_d-in_diff, 0, 0])
             square([in_sq_d+in_diff*2, in_sq_h+in_diff]);
         }
@@ -240,31 +239,23 @@ union() {
     cube([hole_d, 2*shaft_t, shaft_h], center=true);
     
     translate([0, 0, cut_h + in_h - p])
-    for (i = [0:3]) {
-        rotate([0, 0, 90*i-45-(i==2?in_angle_special:in_angle)/2])
-        rotate_extrude(angle=(i==2?in_angle_special:in_angle))
+    for (i = [0:2]) {
+        rotate([0, 0, angleOffset[i]])
+        rotate_extrude(angle=angleWidth[i])
         translate([ramp_flat_r-in_sq_d, 0, 0])
         square([in_sq_d, in_sq_h]);
     }
 }
 
-pulley();
-
 //Hull_L
 color("red")
 hull();
 
+color("green", 0.5)
+pulley();
+
 //Hull_R
-*translate([0, 30, 0])
+translate([0, 30, 0])
 color("red")
 hull(false);
 
-*color("red")
-translate([0, 0, 20])
-rotate([180, 0, 0])
-hull();
-
-*rotate([0, 0, 180])
-translate([0, 0, -20])
-rotate([-90, 0, 0])
-import("../MotorBracket/MotorBracket.stl");
