@@ -430,26 +430,48 @@ module spring_contact_case() {
     }
 }
 
+module spring_contact_case_brim() {
+    brim_h = 0.5;
+    brim_h_first = 0.2;
+    union() {
+        difference() {        
+            cyl(brim_h , outer_r - 0.1, true);
+            translate([-outer_r-15, -outer_r, -p2])
+            cube([2*outer_r, 2*outer_r, 1 + 2*p2]);
+        }
+        for (i = [-4:4]) {
+            color("red")
+            rotate([0, 0, i*8])
+            translate([outer_r - 0.5, -0.25, -p])
+            cube([1, 0.5, brim_h_first]);
+        }
+    }
+}
+
+
+translate([20, 30, 0])
+spring_contact_case_brim();
+
 translate([20, 30, 0])
 spring_contact_case();
 
-translate([20, 0, 0])
+*translate([20, 0, 0])
 //translate([0, 0, 6])
 top_cords();
 
-translate([40, 0, 0])
+*translate([40, 0, 0])
 //translate([0, 0, 3])
 top_knot_disk();
 
-translate([0, -30, 0])
+*translate([0, -30, 0])
 magnet();
 
-union() {
+*union() {
     top_bottom();
     translate([0, 0, top_bottom_h])
     top_fix();
 }
 
-translate([0, 30, 0])
+*translate([0, 30, 0])
 top_cap();
 
