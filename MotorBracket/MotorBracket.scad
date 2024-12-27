@@ -127,7 +127,7 @@ module motorMount(hullOnLeft=true) {
         angle1 = hullOnLeft ? -90+20-hull_angle/4*1 : -90-20-hull_angle/4*1;
         angle2 = hullOnLeft ? -90+20-hull_angle/4*3 : +90-20-hull_angle/4*3;
         rotate([0, 0, angle1])
-        translate([hull_hole_distance, hull_hole_distance, -(holder_h/2+p)+nut_sq_m/2]) {        
+        translate([hull_hole_distance, hull_hole_distance, -(holder_h/2+p)+nut_sq_m/2]) {
             hole(h=holder_h*2);
             cube([nut_sq_s, nut_sq_s, nut_sq_m], center=true);
         }

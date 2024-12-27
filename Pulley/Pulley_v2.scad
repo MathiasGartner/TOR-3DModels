@@ -13,7 +13,7 @@ pulley_r = 13.5; //outer radius
 ramp_flat_r = 7; //INFO: this is the diameter of the pully for the cords
 ramp_before_flat_r = ramp_flat_r + 1.9;
 ramp_r = pulley_r;
-ramp_flat_width = 1.2; //width of the area for the wire
+ramp_flat_width = 2.5; //width of the area for the wire
 ramp_h_offset_top = 0.2;
 ramp_h = 9;
 ramp_h_offset_bottom = pulley_h - ramp_h - ramp_h_offset_top;
@@ -36,7 +36,7 @@ fix_h = 5.5;
 fix_r = 9.2;
 
 hole_h = pulley_h + fix_h;
-hole_d = 5.2; //for motor shaft
+hole_d = 5.2;//+0.1; //for motor shaft
 hole_cut = 0.5;
 
 hole_screw_h = fix_r;
@@ -192,22 +192,31 @@ module pulley() {
 
 cut_h = ramp_h_offset_bottom + ramp_h/2 + ramp_flat_width/2 - p;
 in_h = 2.0;
-in_diff = 0.05;
-in_diff_angle = 0.8;
+in_diff = 0.08;
+in_diff_angle = 1.0;
 in_sq_h = 2;
 in_sq_d = 2.2;
-angleOffset = [-45, 225, 60];
-angleWidth = [60, -60, 60];
+angleOffset = [315, 165, 60];
+angleWidth = [60, 60, 60];
+shaft_in_r = 4.0;
+shaft_in_h_extra = 5;
 
-*mirror([0, 0, 1])
+//Pulley_v2_top
+mirror([0, 0, 1])
 translate([0, 0, -pulley_h-fix_h])
 difference() {
     pulley();
     union() {
-        translate([0, 0, -p])
-        cylinder(cut_h+p2, r=pulley_r+p);
-        translate([0, 0, cut_h])
-        cylinder(in_h, r=ramp_flat_r+in_diff);
+        difference() {
+            union() {
+                translate([0, 0, -p])
+                cylinder(cut_h+p2, r=pulley_r+p);
+                translate([0, 0, cut_h])
+                cylinder(in_h, r=ramp_flat_r+in_diff);
+            }
+            translate([0, 0, cut_h-shaft_in_h_extra])
+            cylinder(in_h+shaft_in_h_extra, r=shaft_in_r);            
+        }
         translate([0, 0, cut_h + in_h - p])
         for (i = [0:2]) {
             rotate([0, 0, angleOffset[i]-in_diff_angle])
@@ -218,44 +227,49 @@ difference() {
     }
 }
 
-*translate([40, 0, 0])
-union() {
-    difference() {    
-        pulley();
-        translate([0, 0, cut_h])
-        cylinder(pulley_h+fix_h, r=pulley_r+p);
+//Pulley_v2_bottom
+!translate([40, 0, 0])
+difference() {
+    union() {
+        difference() {    
+            pulley();
+            translate([0, 0, cut_h])
+            cylinder(pulley_h+fix_h, r=pulley_r+p);
+        }
+        difference() {
+            translate([0, 0, cut_h])
+            cylinder(in_h, r=ramp_flat_r);
+        
+        }        
+        //D-shaft
+        //shaft_h = cut_h + in_h;
+        //shaft_t = 0.5;
+        //translate([0, -hole_d/2, shaft_h/2])
+        //cube([hole_d, 2*shaft_t, shaft_h], center=true);
+        
+        translate([0, 0, cut_h + in_h - p])
+        for (i = [0:2]) {
+            rotate([0, 0, angleOffset[i]])
+            rotate_extrude(angle=angleWidth[i])
+            translate([ramp_flat_r-in_sq_d, 0, 0])
+            square([in_sq_d, in_sq_h]);
+        }
     }
-    difference() {
-        translate([0, 0, cut_h])
-        cylinder(in_h, r=ramp_flat_r);
-        //hole for motor mount
-        translate([0, 0, hole_h/2])
-        cylinder(hole_h+p2, d=hole_d, center=true);
-    }
-    //D-shaft
-    shaft_h = cut_h + in_h;
-    shaft_t = 0.5;
-    translate([0, -hole_d/2, shaft_h/2])
-    cube([hole_d, 2*shaft_t, shaft_h], center=true);
-    
-    translate([0, 0, cut_h + in_h - p])
-    for (i = [0:2]) {
-        rotate([0, 0, angleOffset[i]])
-        rotate_extrude(angle=angleWidth[i])
-        translate([ramp_flat_r-in_sq_d, 0, 0])
-        square([in_sq_d, in_sq_h]);
-    }
+    //hole for motor mount
+    translate([0, 0, cut_h-shaft_in_h_extra-in_diff-p])
+    cylinder(in_h+shaft_in_h_extra+p2+in_diff, r=shaft_in_r+in_diff);
 }
 
 //Hull_L
-color("red")
+*color("red")
 hull();
 
-color("green", 0.5)
+//color("green", 0.5)
+*translate([0, 40, 0])
 pulley();
 
 //Hull_R
-translate([0, 30, 0])
+*translate([0, 30, 0])
 color("red")
 hull(false);
 
