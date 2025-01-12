@@ -36,11 +36,11 @@ fix_h = 5.5;
 fix_r = 9.2;
 
 hole_h = pulley_h + fix_h;
-hole_d = 5.2;//+0.1; //for motor shaft
+hole_d = 5.25; //for motor shaft
 hole_cut = 0.5;
 
 hole_screw_h = fix_r;
-hole_screw_d = 3.3;
+hole_screw_d = 3.2;
 
 nut_h = 2.5;
 nut_d = 6.2;
@@ -66,6 +66,10 @@ h_ramp_inner = h_w + 2*h_p + ramp_h_offset;
 r_screw_top = 5.5;
 h_w_extra = 0.8*0;
 h_screw_d = 3.3;
+
+//for motor shaft
+shaft_h = pulley_h + (fix_h - hole_screw_d)/2 - p;
+shaft_t = 0.5;
 
 hull_poly = [[0, -h_w_extra], 
              [h_r_outer, -h_w_extra], 
@@ -183,17 +187,20 @@ module pulley() {
         cylinder(1, r=pulley_r/2);
         
         //D-shaft
-        shaft_h = pulley_h + (fix_h - hole_screw_d)/2 - p;
-        shaft_t = 0.5;
         translate([0, -hole_d/2, shaft_h/2])
-        cube([hole_d, 2*shaft_t, shaft_h], center=true);
+        difference() {
+            cube([hole_d, 2*shaft_t, shaft_h], center=true);
+            translate([0, 0, shaft_h/2+0.9])
+            rotate([30, 0, 0])
+            cube([hole_d+p, 2*shaft_t+p, 15*shaft_t+p], center=true);
+        }
     }
 }
 
 cut_h = ramp_h_offset_bottom + ramp_h/2 + ramp_flat_width/2 - p;
 in_h = 2.0;
-in_diff = 0.08;
-in_diff_angle = 1.0;
+in_diff = 0.1;
+in_diff_angle = 1.5;
 in_sq_h = 2;
 in_sq_d = 2.2;
 angleOffset = [315, 165, 60];
@@ -228,7 +235,7 @@ difference() {
 }
 
 //Pulley_v2_bottom
-!translate([40, 0, 0])
+translate([40, 0, 0])
 difference() {
     union() {
         difference() {    
@@ -269,7 +276,6 @@ hull();
 pulley();
 
 //Hull_R
-*translate([0, 30, 0])
+*translate([0, 40, 0])
 color("red")
 hull(false);
-
