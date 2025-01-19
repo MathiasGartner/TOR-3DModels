@@ -64,7 +64,7 @@ h_wire_distance = 1.5;
 h_ramp_outer = h_w + 2*h_p + ramp_h_offset/2;
 h_ramp_inner = h_w + 2*h_p + ramp_h_offset;
 r_screw_top = 5.5;
-h_w_extra = 0.8*0;
+h_w_extra = 0.3;
 h_screw_d = 3.3;
 
 //for motor shaft
@@ -209,7 +209,7 @@ shaft_in_r = 4.0;
 shaft_in_h_extra = 5;
 
 //Pulley_v2_top
-mirror([0, 0, 1])
+*mirror([0, 0, 1])
 translate([0, 0, -pulley_h-fix_h])
 difference() {
     pulley();
@@ -235,7 +235,7 @@ difference() {
 }
 
 //Pulley_v2_bottom
-translate([40, 0, 0])
+*translate([40, 0, 0])
 difference() {
     union() {
         difference() {    
@@ -268,14 +268,14 @@ difference() {
 }
 
 //Hull_L
-*color("red")
+color("red")
 hull();
 
-//color("green", 0.5)
-*translate([0, 40, 0])
+color("green", 0.5)
+translate([0, 40, 0])
 pulley();
 
 //Hull_R
-*translate([0, 40, 0])
+!translate([0, 40, 0])
 color("red")
 hull(false);
